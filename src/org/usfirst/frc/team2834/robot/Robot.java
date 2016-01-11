@@ -1,13 +1,13 @@
 
 package org.usfirst.frc.team2834.robot;
 
+import org.usfirst.frc.team2834.robot.commands.TimedHaloDrive;
+import org.usfirst.frc.team2834.robot.subsystems.Drivetrain;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import org.usfirst.frc.team2834.robot.commands.ExampleCommand;
-import org.usfirst.frc.team2834.robot.subsystems.ExampleSubsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -19,22 +19,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 
-	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
-
-    Command autonomousCommand;
-    SendableChooser chooser;
+    public static Drivetrain drivetrain = new Drivetrain();
+    private Command auto;
 
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-		oi = new OI();
-        chooser = new SendableChooser();
-        chooser.addDefault("Default Auto", new ExampleCommand());
-//        chooser.addObject("My Auto", new MyAutoCommand());
-        SmartDashboard.putData("Auto mode", chooser);
+    	
     }
 	
 	/**
@@ -51,30 +45,22 @@ public class Robot extends IterativeRobot {
 	}
 
 	/**
-	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
-	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
-	 * Dashboard, remove all of the chooser code and uncomment the getString code to get the auto name from the text box
-	 * below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional commands to the chooser code above (like the commented example)
-	 * or additional comparisons to the switch structure below with additional strings & commands.
+	 * This function is called once before autonomous period starts
 	 */
     public void autonomousInit() {
-        autonomousCommand = (Command) chooser.getSelected();
-        
-		/* String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
+    	//Select autonomous mode based on input from dashboard
+    	String autoSelected = SmartDashboard.getString("Auto Selector", "Do Nothing");
 		switch(autoSelected) {
-		case "My Auto":
-			autonomousCommand = new MyAutoCommand();
+		case "Drive to OW":
+			auto = new TimedHaloDrive(1, 0, 3);
 			break;
-		case "Default Auto":
+		//If no auto is selected, the dashboard is disconnected, or "Do Nothing" is selected, the robot will do nothing
+		case "Do Nothing":
 		default:
-			autonomousCommand = new ExampleCommand();
+			auto = null;
 			break;
-		} */
-    	
-    	// schedule the autonomous command (example)
-        if (autonomousCommand != null) autonomousCommand.start();
+		}
+        if (auto != null) auto.start();
     }
 
     /**
@@ -85,11 +71,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
-		// This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to 
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
-        if (autonomousCommand != null) autonomousCommand.cancel();
+        if (auto != null) auto.cancel();
     }
 
     /**
