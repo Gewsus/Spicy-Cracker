@@ -3,6 +3,7 @@ package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.TimedHaloDrive;
 import org.usfirst.frc.team2834.robot.subsystems.Drivetrain;
+import org.usfirst.frc.team2834.robot.subsystems.ExampleVision;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -21,6 +22,7 @@ public class Robot extends IterativeRobot {
 
 	public static OI oi;
     public static Drivetrain drivetrain = new Drivetrain();
+    public static ExampleVision vision = new ExampleVision();
     private Command auto;
 
     /**

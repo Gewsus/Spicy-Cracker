@@ -4,14 +4,19 @@ import java.lang.Math;
 import java.util.Comparator;
 import java.util.Vector;
 
+import org.usfirst.frc.team2834.robot.commands.VisionStandard;
+
 import com.ni.vision.NIVision;
+import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ImageType;
+import com.ni.vision.NIVision.Rect;
+import com.ni.vision.NIVision.ShapeMode;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.vision.AxisCamera;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -54,7 +59,8 @@ public class ExampleVision extends PIDSubsystem {
 		};
 
 		//Added fields
-		int session;
+		AxisCamera camera;
+		//int session;
 		double displacementFromCenter = 0.0;
 		boolean isGoal;
 		double motorComp = 0.0;
@@ -78,40 +84,45 @@ public class ExampleVision extends PIDSubsystem {
 		Scores scores = new Scores();
 
 		public ExampleVision() {
-			super(0.001,0,0);
+			//Setup PID Controller
+			super(0.001, 0, 0);
+			this.setOutputRange(-1.0, 1.0);
+			
 		    // create images
 			frame = NIVision.imaqCreateImage(ImageType.IMAGE_RGB, 0);
 			binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 			criteria[0] = new NIVision.ParticleFilterCriteria2(NIVision.MeasurementType.MT_AREA_BY_IMAGE_AREA, AREA_MINIMUM, 100.0, 0, 0);
 
 			//Setup camera for acquisition
-			session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-	        NIVision.IMAQdxConfigureGrab(session);
-	        NIVision.IMAQdxStartAcquisition(session);
+			//session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+	        //NIVision.IMAQdxConfigureGrab(session);
+	        //NIVision.IMAQdxStartAcquisition(session);
+			camera = new AxisCamera("10.0.0.1");
 			
 			//Put default values to SmartDashboard so fields will appear
-			SmartDashboard.putNumber("Tote hue min", HUE_RANGE.minValue);
-			SmartDashboard.putNumber("Tote hue max", HUE_RANGE.maxValue);
-			SmartDashboard.putNumber("Tote sat min", SAT_RANGE.minValue);
-			SmartDashboard.putNumber("Tote sat max", SAT_RANGE.maxValue);
-			SmartDashboard.putNumber("Tote val min", VAL_RANGE.minValue);
-			SmartDashboard.putNumber("Tote val max", VAL_RANGE.maxValue);
+			SmartDashboard.putNumber("Hue min", HUE_RANGE.minValue);
+			SmartDashboard.putNumber("Hue max", HUE_RANGE.maxValue);
+			SmartDashboard.putNumber("Sat min", SAT_RANGE.minValue);
+			SmartDashboard.putNumber("Sat max", SAT_RANGE.maxValue);
+			SmartDashboard.putNumber("Val min", VAL_RANGE.minValue);
+			SmartDashboard.putNumber("Val max", VAL_RANGE.maxValue);
 			SmartDashboard.putNumber("Area min %", AREA_MINIMUM);
 		}
 
 		public void calculate() {
 			//read file in from disk. For this example to run you need to copy image.jpg from the SampleImages folder to the
 			//directory shown below using FTP or SFTP: http://wpilib.screenstepslive.com/s/4485/m/24166/l/282299-roborio-ftp
-			//NIVision.imaqReadFile(frame, "/home/lvuser/SampleImages/image.jpg");
-			NIVision.IMAQdxGrab(session, frame, 1);
+			//NIVision.imaqReadFile(frame, "/home/lvuser/SampleImages/image.jpg");//This is for a test image
+			//NIVision.IMAQdxStartAcquisition(session);//This is for a USB camer (webcam)
+			camera.getImage(frame);//This is for an axis camera
 
 			//Update threshold values from SmartDashboard. For performance reasons it is recommended to remove this after calibration is finished.
-			HUE_RANGE.minValue = (int)SmartDashboard.getNumber("Tote hue min", HUE_RANGE.minValue);
-			HUE_RANGE.maxValue = (int)SmartDashboard.getNumber("Tote hue max", HUE_RANGE.maxValue);
-			SAT_RANGE.minValue = (int)SmartDashboard.getNumber("Tote sat min", SAT_RANGE.minValue);
-			SAT_RANGE.maxValue = (int)SmartDashboard.getNumber("Tote sat max", SAT_RANGE.maxValue);
-			VAL_RANGE.minValue = (int)SmartDashboard.getNumber("Tote val min", VAL_RANGE.minValue);
-			VAL_RANGE.maxValue = (int)SmartDashboard.getNumber("Tote val max", VAL_RANGE.maxValue);
+			HUE_RANGE.minValue = (int)SmartDashboard.getNumber("Hue min", HUE_RANGE.minValue);
+			HUE_RANGE.maxValue = (int)SmartDashboard.getNumber("Hue max", HUE_RANGE.maxValue);
+			SAT_RANGE.minValue = (int)SmartDashboard.getNumber("Sat min", SAT_RANGE.minValue);
+			SAT_RANGE.maxValue = (int)SmartDashboard.getNumber("Sat max", SAT_RANGE.maxValue);
+			VAL_RANGE.minValue = (int)SmartDashboard.getNumber("Val min", VAL_RANGE.minValue);
+			VAL_RANGE.maxValue = (int)SmartDashboard.getNumber("Val max", VAL_RANGE.maxValue);
 
 			//Threshold the image looking for yellow (tote color)
 			NIVision.imaqColorThreshold(binaryFrame, frame, 255, NIVision.ColorMode.HSV, HUE_RANGE, SAT_RANGE, VAL_RANGE);
@@ -120,8 +131,7 @@ public class ExampleVision extends PIDSubsystem {
 			int numParticles = NIVision.imaqCountParticles(binaryFrame, 1);
 			SmartDashboard.putNumber("Masked particles", numParticles);
 
-			//Send masked image to dashboard to assist in tweaking mask.
-			CameraServer.getInstance().setImage(binaryFrame);
+			
 
 			//filter out small particles
 			float areaMin = (float)SmartDashboard.getNumber("Area min %", AREA_MINIMUM);
@@ -157,16 +167,26 @@ public class ExampleVision extends PIDSubsystem {
 				scores.Area = AreaScore(particles.elementAt(0));
 				SmartDashboard.putNumber("Area", scores.Area);
 				isGoal = scores.Aspect > SCORE_MIN && scores.Area > SCORE_MIN;
+				if(isGoal) {
+					ParticleReport p = particles.elementAt(0);
+					Rect rect = new Rect((int)p.BoundingRectLeft, (int)p.BoundingRectTop, (int)(p.BoundingRectRight - p.BoundingRectLeft), (int)(p.BoundingRectTop - p.BoundingRectBottom));
+					NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, rect, DrawMode.DRAW_VALUE, ShapeMode.SHAPE_RECT, 0.0f);
+				}
+				
+				//Send masked image to dashboard to assist in tweaking mask.
+				CameraServer.getInstance().setImage(binaryFrame);
 
 				//Send distance and tote status to dashboard. The bounding rect, particularly the horizontal center (left - right) may be useful for rotating/driving towards a tote
-				SmartDashboard.putBoolean("IsTote", isGoal);
+				SmartDashboard.putBoolean("IsGoal", isGoal);
 				SmartDashboard.putNumber("Distance", computeDistance(binaryFrame, particles.elementAt(0)));
 				
-				double position = (particles.elementAt(0).BoundingRectRight - particles.elementAt(0).BoundingRectLeft) / 2.0;
+				double centerPosition = (particles.elementAt(0).BoundingRectRight - particles.elementAt(0).BoundingRectLeft) / 2.0;
 				double frameCenter = NIVision.imaqGetImageSize(binaryFrame).width / 2.0;
-				displacementFromCenter = frameCenter - position;
+				displacementFromCenter = frameCenter - centerPosition;
+				SmartDashboard.putNumber("Delta from Center", displacementFromCenter);
+				SmartDashboard.putNumber("Distance 2", computeDistance2(binaryFrame, particles.elementAt(0)));
 			} else {
-				SmartDashboard.putBoolean("IsTote", false);
+				SmartDashboard.putBoolean("IsGoal", false);
 			}
 
 			Timer.delay(0.005);				// wait for a motor update time
@@ -218,14 +238,24 @@ public class ExampleVision extends PIDSubsystem {
 
 			size = NIVision.imaqGetImageSize(image);
 			normalizedWidth = 2*(report.BoundingRectRight - report.BoundingRectLeft)/size.width;
-			targetWidth = 7;
+			targetWidth = 20;
 
-			return  targetWidth/(normalizedWidth*12*Math.tan(VIEW_ANGLE*Math.PI/(180*2)));
+			return  targetWidth/(normalizedWidth/*12*/*Math.tan(VIEW_ANGLE*Math.PI/(180/*2*/)));
+		}
+		
+		double computeDistance2(Image image, ParticleReport report) {
+			double focalLength = 0.3;
+			//double iWidth = report.BoundingRectRight - report.BoundingRectLeft;
+			//double iHeight = report.BoundingRectTop - report.BoundingRectBottom;
+			double aHeight = 14;
+			//double aWidth = 20;
+			double z = 90;
+			double alpha = Math.asin((2 * z * (report.BoundingRectTop - report.BoundingRectBottom)) / (focalLength * aHeight)) / 2.0;
+			return z / Math.tan(alpha);
 		}
 
 		protected void initDefaultCommand() {
-			// TODO Auto-generated method stub
-			
+			setDefaultCommand(new VisionStandard());
 		}
 
 		@Override

@@ -18,6 +18,7 @@ public class OI {
 		rightDrive = new Joystick(RobotMap.RIGHT_DRIVE_USB);
 		leftDrive = new Joystick(RobotMap.LEFT_DRIVE_USB);
 		operator = new Joystick(RobotMap.OPERATOR_USB);
+		
 	}
 }
 
