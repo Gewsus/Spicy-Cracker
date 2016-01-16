@@ -4,8 +4,6 @@ import java.lang.Math;
 import java.util.Comparator;
 import java.util.Vector;
 
-import org.usfirst.frc.team2834.robot.commands.VisionStandard;
-
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
@@ -255,7 +253,7 @@ public class ExampleVision extends PIDSubsystem {
 		}
 
 		protected void initDefaultCommand() {
-			setDefaultCommand(new VisionStandard());
+			//setDefaultCommand(new VisionStandard());
 		}
 
 		@Override

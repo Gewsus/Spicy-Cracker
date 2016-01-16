@@ -7,20 +7,18 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class VisionStandard extends Command {
+public class CameraFeedWithProcessing extends Command {
 
-    public VisionStandard() {
-        requires(Robot.vision);
+    public CameraFeedWithProcessing() {
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.vision.disable();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.vision.calculate();
+    	Robot.vision.sendToDashboard(true);
     }
 
     // Make this return true when this Command no longer needs to run execute()
