@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2834.robot.subsystems;
+/*package org.usfirst.frc.team2834.robot.subsystems;
 
 import java.lang.Math;
 import java.util.Comparator;
@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
+*//**
  * Example of finding yellow totes based on retroreflective target.
  * This example utilizes an image file, which you need to copy to the roboRIO
  * To use a camera you will have to integrate the appropriate camera details with this example.
@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Sample images can found here: http://wp.wpi.edu/wpilib/2015/01/16/sample-images-for-vision-projects/
  * 
  * Modified to work as a subsystem in a robot.
- */
+ *//*
 public class ExampleVision extends PIDSubsystem {
 		//A structure to hold measurements of a particle
 		public class ParticleReport implements Comparator<ParticleReport>, Comparable<ParticleReport>{
@@ -197,10 +197,10 @@ public class ExampleVision extends PIDSubsystem {
 			return particle1.PercentAreaToImageArea > particle2.PercentAreaToImageArea;
 		}
 
-		/**
+		*//**
 		 * Converts a ratio with ideal value of 1 to a score. The resulting function is piecewise
 		 * linear going from (0,0) to (1,100) to (2,0) and is 0 for all inputs outside the range 0-2
-		 */
+		 *//*
 		double ratioToScore(double ratio)
 		{
 			return (Math.max(0, Math.min(100*(1-Math.abs(1-ratio)), 100)));
@@ -213,15 +213,15 @@ public class ExampleVision extends PIDSubsystem {
 			return ratioToScore((49/24)*report.Area/boundingArea);
 		}
 
-		/**
+		*//**
 		 * Method to score if the aspect ratio of the particle appears to match the retro-reflective target. Target is 7"x7" so aspect should be 1
-		 */
+		 *//*
 		double AspectScore(ParticleReport report)
 		{
 			return ratioToScore(((report.BoundingRectRight-report.BoundingRectLeft)/(report.BoundingRectBottom-report.BoundingRectTop)));
 		}
 
-		/**
+		*//**
 		 * Computes the estimated distance to a target using the width of the particle in the image. For more information and graphics
 		 * showing the math behind this approach see the Vision Processing section of the ScreenStepsLive documentation.
 		 *
@@ -229,7 +229,7 @@ public class ExampleVision extends PIDSubsystem {
 		 * @param report The Particle Analysis Report for the particle
 		 * @param isLong Boolean indicating if the target is believed to be the long side of a tote
 		 * @return The estimated distance to the target in feet.
-		 */
+		 *//*
 		double computeDistance (Image image, ParticleReport report) {
 			double normalizedWidth, targetWidth;
 			NIVision.GetImageSizeResult size;
@@ -238,7 +238,7 @@ public class ExampleVision extends PIDSubsystem {
 			normalizedWidth = 2*(report.BoundingRectRight - report.BoundingRectLeft)/size.width;
 			targetWidth = 20;
 
-			return  targetWidth/(normalizedWidth/*12*/*Math.tan(VIEW_ANGLE*Math.PI/(180/*2*/)));
+			return  targetWidth/(normalizedWidth12*Math.tan(VIEW_ANGLE*Math.PI/(1802)));
 		}
 		
 		double computeDistance2(Image image, ParticleReport report) {
@@ -271,3 +271,4 @@ public class ExampleVision extends PIDSubsystem {
 		}
 }
 
+*/

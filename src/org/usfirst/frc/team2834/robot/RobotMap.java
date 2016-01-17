@@ -14,6 +14,8 @@ public interface RobotMap {
 	//Drivetrain motor PWM ports
 	public static final int FRONT_LEFT_DRIVETRAIN = 0;
 	public static final int FRONT_RIGHT_DRIVETRAIN = 1;
-	public static final int BACK_LEFT_DRIVETRAIN = 2;
-	public static final int BACK_RIGHT_DRIVETRAIN = 3;
+	public static final int MIDDLE_LEFT_DRIVETRAIN = 2;
+	public static final int MIDDLE_RIGHT_DRIVETRAIN = 3;
+	public static final int BACK_LEFT_DRIVETRAIN = 4;
+	public static final int BACK_RIGHT_DRIVETRAIN = 5;
 }
