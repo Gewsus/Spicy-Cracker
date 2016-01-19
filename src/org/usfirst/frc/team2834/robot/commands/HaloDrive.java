@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class HaloDrive extends Command {
 	
     public HaloDrive() {
+    	super("Halo Drive");
         requires(Robot.drivetrain);
     }
 
@@ -31,7 +32,6 @@ public class HaloDrive extends Command {
     // Called once after isFinished returns true
     protected void end() {
     	Robot.drivetrain.setZero();
-    	Robot.drivetrain.setReverse(false);
     }
 
     // Called when another command which requires one or more of the same

@@ -5,19 +5,21 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- * 
+ *
  */
-public class SetDriveReverse extends Command {
-	boolean reverse;
-
-    public SetDriveReverse(boolean reverse) {
+public class SetDriveSixWheels extends Command {
+	
+	boolean driveMotors;
+	
+    public SetDriveSixWheels(boolean driveMotors) {
+    	super("Set Drive Motors");
         requires(Robot.drivetrain);
-        this.reverse = reverse;
+        this.driveMotors = driveMotors;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivetrain.setReverse(reverse);
+    	Robot.drivetrain.driveMotors = driveMotors;
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -36,5 +38,6 @@ public class SetDriveReverse extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 }

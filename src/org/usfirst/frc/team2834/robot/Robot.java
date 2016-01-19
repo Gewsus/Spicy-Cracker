@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-    	
+    	oi = new OI();
     }
 	
 	/**
@@ -39,7 +39,7 @@ public class Robot extends IterativeRobot {
 	 * the robot is disabled.
      */
     public void disabledInit(){
-
+    	
     }
 	
 	public void disabledPeriodic() {
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
 	 */
     public void autonomousInit() {
     	//Select autonomous mode based on input from dashboard
-    	String autoSelected = SmartDashboard.getString("Auto Selector", "Do Nothing");
+    	String autoSelected = "";//SmartDashboard.getString("Auto Selector", "Do Nothing");
 		switch(autoSelected) {
 		case "Drive to OW":
 			auto = new TimedHaloDrive(1, 0, 3);
@@ -69,6 +69,7 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+    	SmartDashboard.putData("Scheduler", Scheduler.getInstance());
         Scheduler.getInstance().run();
     }
 

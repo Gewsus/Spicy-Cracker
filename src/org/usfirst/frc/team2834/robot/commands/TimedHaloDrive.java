@@ -11,18 +11,16 @@ public class TimedHaloDrive extends Command {
 	
 	double power;
 	double rotate;
-	double seconds;
-
+	
     public TimedHaloDrive(double power, double rotate, double seconds) {
+    	super("Timed Halo Drive: " + power + ' ' + rotate + ' ' + seconds, seconds);
         requires(Robot.drivetrain);
         this.power = power;
         this.rotate = rotate;
-        this.seconds = seconds;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	setTimeout(seconds);
     	Robot.drivetrain.setZero();
     }
 

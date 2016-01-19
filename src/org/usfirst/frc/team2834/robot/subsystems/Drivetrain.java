@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Drivetrain extends Subsystem implements RobotMap {
 	
-	private boolean reverse = false; //false: standard drive, true: reverse drive
-	public boolean driveMotors = false; //false: 4, true: 6
+	private volatile boolean reverse = false; //false: standard drive, true: reverse drive
+	public volatile boolean driveMotors = false; //false: 4, true: 6
+	private double centerScale = 0.4; //Apply an exponential scale function to the input
     
     Victor motors[] = {
     	new Victor(FRONT_LEFT_DRIVETRAIN),
@@ -24,44 +25,41 @@ public class Drivetrain extends Subsystem implements RobotMap {
     };
     
     public Drivetrain() {
-    	motors[0].setInverted(false);
-    	motors[1].setInverted(false);
-    	motors[2].setInverted(false);
-    	motors[3].setInverted(true);
-    	motors[4].setInverted(true);
-    	motors[5].setInverted(true);
+    	super("Drivetrain");
+    	setReverse(true);
     }
 
     public void haloDrive(double power, double rotate) {
     	rotate *= reverse ? -1.0 : 1.0;
     	double left = power + rotate;
     	double right = power - rotate;
+    	setOutput(left, right, false);
+    }
+    
+    public void setOutput(double left, double right, boolean scaleCenter) {
     	motors[0].set(left);
     	motors[1].set(left);
     	motors[3].set(right);
     	motors[4].set(right);
+    	//Scale output values
+    	left = scaleCenter ? scale(left, centerScale) : left;
+    	right = scaleCenter ? scale(right, centerScale) : right;
     	//These motor will only activate when Drivetrain is in 6 wheel-mode
     	motors[2].set(driveMotors ? left : 0.0);
 		motors[5].set(driveMotors ? right : 0.0);
     }
     
-    public void setOutput(double left, double right) {
-    	motors[0].set(left);
-    	motors[1].set(left);
-    	motors[3].set(right);
-    	motors[4].set(right);
-    	motors[2].set(driveMotors ? left : 0.0);
-		motors[5].set(driveMotors ? right : 0.0);
+    private double scale(double input, double scaler) {
+    	return input * Math.pow(Math.abs(input), scaler - 1.0);
     }
     
     public void setZero() {
-    	motors[0].set(0);
-    	motors[1].set(0);
-    	motors[2].set(0);
-    	motors[3].set(0);
-    	motors[4].set(0);
-    	motors[5].set(0);
+    	setOutput(0, 0, false);
     }
+    
+    public boolean isReverse() {
+		return reverse;
+	}
     
     public void setReverse(boolean reverse) {
     	this.reverse = reverse;

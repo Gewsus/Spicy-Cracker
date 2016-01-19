@@ -1,7 +1,5 @@
 package org.usfirst.frc.team2834.robot.subsystems;
 
-import org.usfirst.frc.team2834.robot.commands.CameraFeedWithProcessing;
-
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.ColorMode;
 import com.ni.vision.NIVision.Image;
@@ -9,6 +7,7 @@ import com.ni.vision.NIVision.ImageType;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 
 /**
@@ -18,11 +17,13 @@ public class Vision extends Subsystem implements Runnable {
 	
 	public boolean processImage = true;
 	private boolean isGoal = false;
+	double distance = 0.0;
 	
 	//Image fields
-	Image frame;
-	Image binaryFrame;
-	AxisCamera cam;
+	Image frame;		//Frame that will hold the raw image from camera
+	Image binaryFrame;	//Frame depicting possible targets
+	AxisCamera cam;		//Object reference to an Axis Camera
+	int session;		//Session id needed for a USB camera
 	
 	//NIVision fields
 	NIVision.ParticleFilterCriteria2 criteria[];
@@ -36,27 +37,41 @@ public class Vision extends Subsystem implements Runnable {
 	NIVision.Range LRange;
 	
 	public Vision() {
+		super("Vision");
 		//Setup camera and images
+		//cam = new AxisCamera("10.28.34.20");
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_HSL, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
-		cam = new AxisCamera("10.28.34.20");
 		
-		//Adjust criteria to determine which particles to filter out
-		criteria = new NIVision.ParticleFilterCriteria2[1];
+		//Set HSV bounds to that of the retro-reflective tape
+		//The color threshold will filter out pixels outside of these ranges
+    	HRange = new NIVision.Range(80, 100);
+    	SRange = new NIVision.Range(230, 255);
+    	LRange = new NIVision.Range(30, 100);
+		
+		//Set criteria to determine which particles to filter out
     	options = new NIVision.ParticleFilterOptions2(0, 1, 1, 1);
-    	//Area parameter
+		criteria = new NIVision.ParticleFilterCriteria2[1];
+    	criteria[0] = new NIVision.ParticleFilterCriteria2();
     	criteria[0].lower = 50;
     	criteria[0].parameter = NIVision.MeasurementType.MT_AREA;
     	
-    	new Thread(this).run();
+    	//Put data on dashboard that may need to be tested
+    	//SmartDashboard.putNumber("Focal Length", 1000);
+    	
+    	//Identify camera session and begin receiving video.
+    	//FRC crashes the program if the camera does not exist and you try to run this code
+    	//so i made it easy to just disable the camera if it is disconnected.
+		if(cam != null) {
+			session = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			NIVision.IMAQdxConfigureGrab(session);
+			NIVision.IMAQdxStartAcquisition(session);
+			//Run camera feed in separate thread so Scheduler does not interfere.
+			new Thread(this).start();
+		}
 	}
     
-    public void calculate() {
-    	
-    	//Set HSV bounds to that of the retro-reflective tape
-    	HRange = new NIVision.Range(55, 140);
-    	SRange = new NIVision.Range(100, 255);
-    	LRange = new NIVision.Range(100, 130);
+    private void calculate() {
     	
     	//Filter out pixels and particles that do not meet the criteria
     	NIVision.imaqColorThreshold(binaryFrame, frame, 1, ColorMode.HSL, HRange, SRange, LRange);
@@ -87,38 +102,37 @@ public class Vision extends Subsystem implements Runnable {
 					best = reports[p];
 				}
 			}
-		}
-		if (best.area != 0) {
 			NIVision.imaqDrawShapeOnImage(frame, frame, best.boundingBox, NIVision.DrawMode.DRAW_VALUE, NIVision.ShapeMode.SHAPE_RECT, 0);
-		}
+			SmartDashboard.putNumber("Best Particle Box Width", best.boundingBox.width);
+	    	SmartDashboard.putNumber("Best Particle Box Height", best.boundingBox.height);
+    	}
+    	SmartDashboard.putBoolean("Is Goal", isGoal);
     }
     
     public void run() {
-    	cam.getImage(frame);
-    	if(processImage) {
-    		calculate();
+    	//Continuously grab images, possible process, and feed them to the dashboard.
+    	while(true) {
+			NIVision.IMAQdxGrab(session, frame, 1);
+			//cam.getImage(frame);
+			if(processImage) {
+				calculate();
+			}
+			CameraServer.getInstance().setImage(frame);
     	}
-    	CameraServer.getInstance().setImage(frame);
     }
     
-    public void processImage(boolean processImage) {
-    	this.processImage = processImage;
-    }
-    
-    public double getDistance() {
+    public void getDistance() {
     	if(isGoal) {
-    		double focalLength = 0.3;
-			double aHeight = 14;
-			//double aWidth = 20;
-			double z = 90;
+    		double focalLength = SmartDashboard.getNumber("Focal Length", 1000);	//Coefficient for the relation between a camera image and actual dimensions
+			double aHeight = 14;		//Actual height of target
+			double z = 90;				//Actual vertical distance from the center of the target to the camera
 			double alpha = Math.asin((2 * z * best.boundingBox.height) / (focalLength * aHeight)) / 2.0;
-			return z / Math.tan(alpha);
+			distance = z / Math.tan(alpha);
     	}
-    	return 0.0;
+    	distance = 0.0;
     }
 
     public void initDefaultCommand() {
-        setDefaultCommand(new CameraFeedWithProcessing());
     }
 }
 

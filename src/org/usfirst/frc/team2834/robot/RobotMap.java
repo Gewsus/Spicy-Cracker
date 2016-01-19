@@ -18,4 +18,8 @@ public interface RobotMap {
 	public static final int MIDDLE_RIGHT_DRIVETRAIN = 3;
 	public static final int BACK_LEFT_DRIVETRAIN = 4;
 	public static final int BACK_RIGHT_DRIVETRAIN = 5;
+	
+	//Joystick buttons
+	public static final int SET_DRIVE_MOTORS_BUTTON = 1;
+	public static final int SET_DRIVE_REVERSE_BUTTON  = 1;
 }
