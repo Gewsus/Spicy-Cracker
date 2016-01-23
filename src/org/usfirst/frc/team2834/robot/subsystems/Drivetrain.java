@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
- *
+ * Subsystem for basic robot movement
  */
 public class Drivetrain extends Subsystem implements RobotMap {
 	
-	private volatile boolean reverse = false; //false: standard drive, true: reverse drive
-	public volatile boolean driveMotors = false; //false: 4, true: 6
+	private boolean reverse = false; //false: standard drive, true: reverse drive
+	public boolean driveMotors = false; //false: 4, true: 6
 	private double centerScale = 0.4; //Apply an exponential scale function to the input
     
     Victor motors[] = {

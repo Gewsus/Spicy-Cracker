@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 
 /**
- *
+ * Subsystems that processes images based on the retroreflective tape around the goals
  */
 public class Vision extends Subsystem implements Runnable {
 	
@@ -121,13 +121,23 @@ public class Vision extends Subsystem implements Runnable {
     	}
     }
     
-    public void getDistance() {
+    public synchronized void calcDistance() {
     	if(isGoal) {
     		double focalLength = SmartDashboard.getNumber("Focal Length", 1000);	//Coefficient for the relation between a camera image and actual dimensions
 			double aHeight = 14;		//Actual height of target
 			double z = 90;				//Actual vertical distance from the center of the target to the camera
 			double alpha = Math.asin((2 * z * best.boundingBox.height) / (focalLength * aHeight)) / 2.0;
 			distance = z / Math.tan(alpha);
+    	}
+    	distance = 0.0;
+    }
+    
+    public synchronized void getDistance2() {
+    	if(isGoal) {
+    		double fov = 26.9277;
+    		double aWidth = 20.0;
+    		distance = aWidth * NIVision.imaqGetImageSize(binaryFrame).width /
+    				(2.0 * best.boundingBox.width * Math.tan(fov));
     	}
     	distance = 0.0;
     }

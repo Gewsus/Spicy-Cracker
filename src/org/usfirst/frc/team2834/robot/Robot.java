@@ -2,8 +2,7 @@
 package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.TimedHaloDrive;
-import org.usfirst.frc.team2834.robot.subsystems.Drivetrain;
-import org.usfirst.frc.team2834.robot.subsystems.Vision;
+import org.usfirst.frc.team2834.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -23,6 +22,8 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
     public static Drivetrain drivetrain = new Drivetrain();
     public static Vision vision = new Vision();
+    public static Shooter shooter = new Shooter();
+    public static ShooterAngle shooterAngle = new ShooterAngle();
     private Command auto;
 
     /**
@@ -53,14 +54,14 @@ public class Robot extends IterativeRobot {
     	//Select autonomous mode based on input from dashboard
     	String autoSelected = "";//SmartDashboard.getString("Auto Selector", "Do Nothing");
 		switch(autoSelected) {
-		case "Drive to OW":
-			auto = new TimedHaloDrive(1, 0, 3);
-			break;
-		//If no auto is selected, the dashboard is disconnected, or "Do Nothing" is selected, the robot will do nothing
-		case "Do Nothing":
-		default:
-			auto = null;
-			break;
+			case "Drive to OW":
+				auto = new TimedHaloDrive(1, 0, 3);
+				break;
+			//If no auto is selected, the dashboard is disconnected, or "Do Nothing" is selected, the robot will do nothing
+			case "Do Nothing":
+			default:
+				auto = null;
+				break;
 		}
         if (auto != null) auto.start();
     }
@@ -81,6 +82,7 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	SmartDashboard.putData("Scheduler", Scheduler.getInstance());
         Scheduler.getInstance().run();
     }
     
