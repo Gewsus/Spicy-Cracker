@@ -14,6 +14,14 @@ public interface RobotMap {
 	//Joystick buttons
 	public static final int SET_DRIVE_MOTORS_BUTTON = 1;
 	public static final int SET_DRIVE_REVERSE_BUTTON  = 1;
+	public static final int SHOOT_BUTTON = 1;
+	public static final int SHOOTER_STEP_UP_BUTTON = 3;
+	public static final int SHOOTER_STEP_DOWN_BUTTON = 2;
+	public static final int DEFAULT_SHOOTER_SETPOINT_BUTTON = 4;
+	public static final int AUTO_SHOOTER_SETPOINT_BUTTON = 5;
+	public static final int SHOOTER_ANGLE_OVERRIDE_BUTTON = 6;
+	public static final int SHOOTER_OVERRIDE_BUTTON = 7;
+	public static final int SELECT_SHOOTER_ANGLE_SETPOINT_BUTTON = 10;
 	
 	//Drivetrain motor PWM ports
 	public static final int FRONT_LEFT_DRIVETRAIN = 0;
@@ -30,6 +38,7 @@ public interface RobotMap {
 	public static final int RIGHT_SHOOTER_MOTOR = 7;
 	public static final int RIGHT_SHOOTER_ENCODER_A = 2;
 	public static final int RIGHT_SHOOTER_ENCODER_B = 3;
+	public static final int SHOOTER_PUSH_ACTUATOR = 9;
 	public static final int SHOOTER_ANGLE_MOTOR = 8;
 	public static final int SHOOTER_ANGLE_ENCODER = 0;
 }

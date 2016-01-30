@@ -3,19 +3,24 @@ package org.usfirst.frc.team2834.robot.subsystems;
 import org.usfirst.frc.team2834.robot.RobotMap;
 
 import com.AnalogAbsoluteEncoder;
+import com.DashboardSender;
 
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Subsystem that controls what angle the shooter is at
  */
-public class ShooterAngle extends PIDSubsystem implements RobotMap {
+public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSender {
     
 	AnalogAbsoluteEncoder angleEncoder;
 	Victor angleMotor;
 	//private double angleZero;  //Reading from the encoder at the start of the match;// Put methods for controlling this subsystem
-
+	public static final double UPPER_SETPOINT = 0.0;
+	public static final double MIDDLE_SETPOINT = 50.0;
+	public static final double LOWER_SETPOINT = 100.0;
+	
 	public ShooterAngle() {
 		super("Shooter Angle", 0.005, 0.0, 0.0);
 		angleEncoder = new AnalogAbsoluteEncoder(SHOOTER_ANGLE_ENCODER);
@@ -64,6 +69,18 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap {
 
 	protected void usePIDOutput(double output) {
 		angleMotor.set(output);
+	}
+
+	@Override
+	public void dashboardInit() {
+		SmartDashboard.putData("Angle Encoder", angleEncoder);
+		SmartDashboard.putData("Angle PID", getPIDController());
+	}
+
+	@Override
+	public void dashboardPeriodic() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

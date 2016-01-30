@@ -4,28 +4,56 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
+import edu.wpi.first.wpilibj.tables.ITable;
 
-public class AnalogAbsoluteEncoder implements Runnable, PIDSource {
+
+/**
+ * @author Adam Raine
+ * We use this class to use an analog signal that provides information about the
+ * angle of a shaft, and use it to determine the position of the shaft.
+ * 
+ * By noticing when the analog signal has a large dropoff, it is possible to
+ * accumulate the cycles of the analog signal into one, continuous function
+ * for the position of a shaft.
+ */
+public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSendable {
 	
+	private boolean running = true;
 	private AnalogInput ai;
 	private double offset;
-	private double realDistance;
+	private volatile double realDistance;
+	private volatile double realRate;
 	private double lastVoltage;
 	private int cycles;
-	private final double ANALOG_RANGE = 4.972;
+	private PIDSourceType pidSource = PIDSourceType.kDisplacement;
+	private final double ANALOG_RANGE = 4.972; //Max voltage: 4.987 subtract min voltage: 0.015
+	private ITable table;
 	
 	public AnalogAbsoluteEncoder(int channel) {
 		ai = new AnalogInput(channel);
+		//To get a more accurate reading, the code averages 4 samples from the
+		//analog channel in each iteration.
 		ai.setAverageBits(4);
 		zero();
-		new Thread(this).start();
+		//This process must continue throughout the match, therefore it must
+		//be run continously in a seperate thread than the scheduler.
+		new Thread(this, "Analog Absolute Encoder Thread").start();
 	}
 
 	public void run() {
-		while(true) {
+		while(running) {
 			double offsetVoltage = ai.getAverageVoltage() - offset;
-			if(offsetVoltage - lastVoltage < -2.0) cycles++;
-			if(offsetVoltage - lastVoltage > 2.0) cycles--;
+			double rate = offsetVoltage - lastVoltage;
+			if(rate < -2.0) {
+				realRate = ANALOG_RANGE + rate;
+				cycles++;
+			} else if(rate > 2.0) {
+				realRate = ANALOG_RANGE - rate;
+				cycles--;
+			} else {
+				realRate = rate;
+			}
 			realDistance = ANALOG_RANGE * cycles + offsetVoltage;
 			lastVoltage = offsetVoltage;
 			Timer.delay(0.01);
@@ -36,23 +64,67 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource {
 		return realDistance;
 	}
 	
+	public double getRate() {
+		return realRate;
+	}
+	
 	public void zero() {
 		offset = ai.getAverageVoltage();
 		realDistance = 0.0;
+		realRate = 0.0;
 		lastVoltage = 0.0;
 		cycles = 0;
 	}
-
+	
+	public void stop() {
+		running = false;
+	}
+	
 	//Implemented methods from PIDSource so this class can easily operate as a PIDSource
 	public void setPIDSourceType(PIDSourceType pidSource) {
-		//This will always be a displacement PIDSource
+		this.pidSource = pidSource;
 	}
 
 	public PIDSourceType getPIDSourceType() {
-		return PIDSourceType.kDisplacement;
+		return pidSource;
 	}
 
 	public double pidGet() {
-		return getDistance();
+		switch(pidSource) {
+			case kRate:
+				return getRate();
+			default:
+				return getDistance();
+		}
 	}
+
+	@Override
+	public void initTable(ITable subtable) {
+		table = subtable;
+		updateTable();
+	}
+
+	@Override
+	public ITable getTable() {
+		return table;
+	}
+
+	@Override
+	public String getSmartDashboardType() {
+		return "Encoder";
+	}
+
+	@Override
+	public void updateTable() {
+		if (table != null) {
+			table.putNumber("Distance", realDistance);
+			table.putNumber("Rate", realRate);
+		}
+	}
+
+	@Override
+	public void startLiveWindowMode() {}
+
+	@Override
+	public void stopLiveWindowMode() {}
 }

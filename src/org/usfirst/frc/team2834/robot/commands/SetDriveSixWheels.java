@@ -19,7 +19,7 @@ public class SetDriveSixWheels extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivetrain.driveMotors = driveMotors;
+    	Robot.drivetrain.setDriveMotors(driveMotors);
     }
 
     // Called repeatedly when this Command is scheduled to run

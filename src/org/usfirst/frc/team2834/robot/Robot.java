@@ -4,6 +4,8 @@ package org.usfirst.frc.team2834.robot;
 import org.usfirst.frc.team2834.robot.commands.TimedHaloDrive;
 import org.usfirst.frc.team2834.robot.subsystems.*;
 
+import com.DashboardSender;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -24,6 +26,7 @@ public class Robot extends IterativeRobot {
     public static Vision vision = new Vision();
     public static Shooter shooter = new Shooter();
     public static ShooterAngle shooterAngle = new ShooterAngle();
+    public static Pusher pusher = new Pusher();
     private Command auto;
 
     /**
@@ -32,6 +35,8 @@ public class Robot extends IterativeRobot {
      */
     public void robotInit() {
     	oi = new OI();
+    	SmartDashboard.putData("Scheduler", Scheduler.getInstance());
+    	DashboardSender.sendInitData();
     }
 	
 	/**
@@ -40,11 +45,11 @@ public class Robot extends IterativeRobot {
 	 * the robot is disabled.
      */
     public void disabledInit(){
-    	
     }
 	
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+		DashboardSender.sendPeriodicData();
 	}
 
 	/**
@@ -70,8 +75,8 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-    	SmartDashboard.putData("Scheduler", Scheduler.getInstance());
         Scheduler.getInstance().run();
+        DashboardSender.sendPeriodicData();
     }
 
     public void teleopInit() {
@@ -82,8 +87,8 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	SmartDashboard.putData("Scheduler", Scheduler.getInstance());
         Scheduler.getInstance().run();
+        DashboardSender.sendPeriodicData();
     }
     
     /**

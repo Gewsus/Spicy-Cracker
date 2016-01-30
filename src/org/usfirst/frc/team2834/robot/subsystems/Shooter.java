@@ -2,6 +2,8 @@ package org.usfirst.frc.team2834.robot.subsystems;
 
 import org.usfirst.frc.team2834.robot.RobotMap;
 
+import com.DashboardSender;
+
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
@@ -13,16 +15,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Subsystem that controls the shooting functionality of the robot
  */
-public class Shooter extends Subsystem implements RobotMap {
+/**
+ * @author Adam
+ *
+ */
+public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	
-	PIDController leftPID;
-	PIDController rightPID;
+	public PIDController leftPID;
+	public PIDController rightPID;
 	Victor leftMotor;
 	Victor rightMotor;
 	Encoder leftEncoder;
 	Encoder rightEncoder;
+	private final double P = 0.001;
+	private final double I = 0.0;
+	private final double D = 0.0;
+	private final double F = 0.001;
+	public static final double DEFAULT_SETPOINT = 2000.0;
 	
-
     // Initialize your subsystem here
     public Shooter() {
         super("Shooter");
@@ -41,18 +51,12 @@ public class Shooter extends Subsystem implements RobotMap {
         rightEncoder.setPIDSourceType(PIDSourceType.kRate);
         
         //Initialize PID values for the shooter
-        leftPID = new PIDController(0.0005, 0.0, 0.0, 0.0005, leftEncoder, leftMotor);
-        leftPID.setInputRange(0.0, 2500.0);
+        leftPID = new PIDController(P, I, D, F, leftEncoder, leftMotor);
         leftPID.setOutputRange(0.0, 1.0);
         leftPID.setAbsoluteTolerance(50.0);
-        rightPID = new PIDController(0.0005, 0.0, 0.0, 0.0005, rightEncoder, rightMotor);
-        rightPID.setInputRange(0.0, 2500.0);
+        rightPID = new PIDController(P, I, D, F, rightEncoder, rightMotor);
         rightPID.setOutputRange(0.0, 1.0);
         rightPID.setAbsoluteTolerance(50.0);
-        
-        //Send one PIDController to the dashboard.
-        //SmartDashboard will let you configure PID constants on the driver station instead of changing the code each time.
-        SmartDashboard.putData("Shooter Left PID", leftPID);
     }
     
     public void setEnabled(boolean enable) {
@@ -82,7 +86,25 @@ public class Shooter extends Subsystem implements RobotMap {
     	rightMotor.set(right);
     }
     
-    public void initDefaultCommand() {
+    /**
+     * For some reason, the code crashes when these functions are called before robotInit in
+     * the Robot class.  This method is just an easy way for robotInit to place data on
+     * the SmartDashboard for testing.
+     */
+    public void dashboardInit() {
+    	//Send one PIDController to the dashboard.
+        //SmartDashboard will let you configure PID constants on the driver station instead of changing the code each time.
+        //This only needs to be sent once, SD will periodically send and recieve data from objects like PIDController
+        SmartDashboard.putData("Shooter Right PID", rightPID);
+        SmartDashboard.putData("Shooter Left Encoder", leftEncoder);
+    	SmartDashboard.putData("Shooter Right Encoder", rightEncoder);
+    }
+    
+    @Override
+	public void dashboardPeriodic() {
+	}
+
+	public void initDefaultCommand() {
     	//Shooter does not need a default command
     }
 }
