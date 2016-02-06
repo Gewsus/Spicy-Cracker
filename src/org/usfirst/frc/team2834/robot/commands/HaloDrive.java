@@ -21,7 +21,7 @@ public class HaloDrive extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(Robot.oi.leftDrive.getY(), Robot.oi.rightDrive.getX());
+    	Robot.drivetrain.haloDrive(Robot.oi.leftDrive.getY(), Robot.oi.rightDrive.getX(), false);
     }
 
     // Make this return true when this Command no longer needs to run execute()

@@ -1,13 +1,15 @@
 
 package org.usfirst.frc.team2834.robot;
 
-import org.usfirst.frc.team2834.robot.commands.TimedHaloDrive;
+import org.usfirst.frc.team2834.robot.commands.*;
+import org.usfirst.frc.team2834.robot.commands.auto.*;
 import org.usfirst.frc.team2834.robot.subsystems.*;
 
 import com.DashboardSender;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +29,7 @@ public class Robot extends IterativeRobot {
     public static Shooter shooter = new Shooter();
     public static ShooterAngle shooterAngle = new ShooterAngle();
     public static Pusher pusher = new Pusher();
-    private Command auto;
+    private CommandGroup auto = new CommandGroup();
 
     /**
      * This function is run when the robot is first started up and should be
@@ -35,7 +37,6 @@ public class Robot extends IterativeRobot {
      */
     public void robotInit() {
     	oi = new OI();
-    	SmartDashboard.putData("Scheduler", Scheduler.getInstance());
     	DashboardSender.sendInitData();
     }
 	
@@ -57,17 +58,30 @@ public class Robot extends IterativeRobot {
 	 */
     public void autonomousInit() {
     	//Select autonomous mode based on input from dashboard
-    	String autoSelected = "";//SmartDashboard.getString("Auto Selector", "Do Nothing");
-		switch(autoSelected) {
-			case "Drive to OW":
-				auto = new TimedHaloDrive(1, 0, 3);
-				break;
-			//If no auto is selected, the dashboard is disconnected, or "Do Nothing" is selected, the robot will do nothing
-			case "Do Nothing":
-			default:
-				auto = null;
-				break;
+    	int mode = (int) SmartDashboard.getNumber("Auto Mode", 0);
+    	int position = (int) SmartDashboard.getNumber("Auto Position", 0);
+    	int defense = (int) SmartDashboard.getNumber("Auto Defense", 0);
+    	boolean direction = SmartDashboard.getBoolean("Auto Direction");
+    	
+    	//Swap the driving direction if the user wants to
+    	if(direction) {
+    		new ToggleDriveReverse().start();
+    	}
+    	
+		if(mode >= 1 && position != 5) {
+			auto.addSequential(new DriveToOW());
+			if(mode >= 2) {
+				switch(defense) {
+					//Add code for each defense here
+				}
+				if(mode >= 3) {
+					//add code to turn and shoot here
+				}
+			}
+		} else if(mode == 3 && position == 5) {
+			//add code to shoot from spy
 		}
+    	
         if (auto != null) auto.start();
     }
 

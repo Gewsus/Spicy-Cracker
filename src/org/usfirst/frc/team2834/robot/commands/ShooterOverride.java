@@ -16,6 +16,7 @@ public class ShooterOverride extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.shooter.setEnabled(false);
     	Robot.shooter.setShooterOutput(0.0, 0.0);
     }
 

@@ -17,10 +17,12 @@ import edu.wpi.first.wpilibj.vision.AxisCamera;
 public class Vision extends Subsystem implements Runnable, DashboardSender {
 	
 	private boolean shooterView = false; //Which camera (Shooter or ground) should be sent to the dashboard
-	private boolean processImage = true; //Processing the image takes a lot of processing power and a lot of time, sometimes it may be best to leave it off
+	private boolean processImage = false; //Processing the image takes a lot of processing power and a lot of time, sometimes it may be best to leave it off
 	private boolean isGoal = false; //Is there a particle that meets the criteria
 	double distance = 0.0; //EXPERIMENTAL: Gives the distance to a possible target
 	double autoRotateToTarget = 0.0; //EXPERIMENTAL: Factor to rotate the robot so it is centered on a possible target
+	private final int FRAME_HEIGHT;
+	private final int FRAME_WIDTH;
 	
 	//Image fields
 	Image frame;		//Frame that will hold the raw image from camera
@@ -43,9 +45,11 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		//setOutputRange(-1.0, 1.0);
 		
 		//Setup camera and images
-		//cam = new AxisCamera("10.28.34.20");
+		cam = new AxisCamera("10.28.34.11");
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_HSL, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
+		FRAME_HEIGHT = NIVision.imaqGetImageSize(binaryFrame).height;
+		FRAME_WIDTH = NIVision.imaqGetImageSize(binaryFrame).width;
 		
 		//Set HSV bounds to that of the retro-reflective tape
 		//The color threshold will filter out pixels outside of these ranges
@@ -54,7 +58,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	LRange = new NIVision.Range(30, 100);
 		
 		//Set criteria to determine which particles to filter out
-    	options = new NIVision.ParticleFilterOptions2(0, 1, 1, 1);
+    	options = new NIVision.ParticleFilterOptions2(0, 0, 1, 1);
 		criteria = new NIVision.ParticleFilterCriteria2[1];
     	criteria[0] = new NIVision.ParticleFilterCriteria2();
     	criteria[0].lower = 50;
@@ -66,7 +70,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	//Identify camera session and begin receiving video.
     	//FRC crashes the program if the camera does not exist and you try to run this code
     	//so i made it easy to just disable the camera if it is disconnected.
-		if(cam != null) {
+		if(processImage) {
 			processSession = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(processSession);
 			NIVision.IMAQdxStartAcquisition(processSession);
@@ -116,9 +120,9 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     public void run() {
     	//Continuously grab images, possible process, and feed them to the dashboard.
     	while(true) {
-    		int session = shooterView ? processSession : viewSession;
-			NIVision.IMAQdxGrab(session, frame, 1);
-			//cam.getImage(frame);
+    		//int session = shooterView ? processSession : viewSession;
+			//NIVision.IMAQdxGrab(session, frame, 1);
+			cam.getImage(frame);
 			if(processImage) {
 				calculate();
 			}
@@ -126,7 +130,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	}
     }
     
-    public synchronized void calcDistance() {
+    public void calcDistance() {
     	if(isGoal) {
     		double focalLength = SmartDashboard.getNumber("Focal Length", 1000);	//Coefficient for the relation between a camera image and actual dimensions
 			double aHeight = 14.0;		//Actual height of target
@@ -138,12 +142,11 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	}
     }
     
-    public synchronized void calcDistance2() {
+    public void calcDistance2() {
     	if(isGoal) {
     		double fov = 26.9277;
     		double aWidth = 20.0;
-    		distance = aWidth * NIVision.imaqGetImageSize(binaryFrame).width /
-    				(2.0 * best.boundingBox.width * Math.tan(fov));
+    		distance = aWidth * FRAME_WIDTH / (2.0 * best.boundingBox.width * Math.tan(fov));
     	} else {
     		distance = 0.0;
     	}
@@ -185,6 +188,10 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 
 	public boolean isGoal() {
 		return isGoal;
+	}
+	
+	public boolean isCenterBelowGoal() {
+		return isGoal && best.boundingBox.top > FRAME_HEIGHT / 2.0;
 	}
 
 	@Override

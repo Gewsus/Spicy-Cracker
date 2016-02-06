@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2834.robot.commands;
+package org.usfirst.frc.team2834.robot.commands.auto;
 
 import org.usfirst.frc.team2834.robot.Robot;
 
@@ -26,7 +26,7 @@ public class TimedHaloDrive extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(power, rotate);
+    	Robot.drivetrain.haloDrive(power, rotate, false);
     }
 
     // Make this return true when this Command no longer needs to run execute()

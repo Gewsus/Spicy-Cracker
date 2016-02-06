@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.tables.ITable;
 public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSendable {
 	
 	private boolean running = true;
+	private boolean inverted = false;
 	private AnalogInput ai;
 	private double offset;
 	private volatile double realDistance;
@@ -34,10 +35,11 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSen
 		ai = new AnalogInput(channel);
 		//To get a more accurate reading, the code averages 4 samples from the
 		//analog channel in each iteration.
-		ai.setAverageBits(4);
+		ai.setAverageBits(0);
+		ai.setOversampleBits(0);
 		zero();
 		//This process must continue throughout the match, therefore it must
-		//be run continously in a seperate thread than the scheduler.
+		//be run continuously in a separate thread than the scheduler.
 		new Thread(this, "Analog Absolute Encoder Thread").start();
 	}
 
@@ -61,11 +63,11 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSen
 	}
 	
 	public double getDistance() {
-		return realDistance;
+		return (inverted ? -1.0 : 1.0) * realDistance;
 	}
 	
 	public double getRate() {
-		return realRate;
+		return (inverted ? -1.0 : 1.0) * realRate;
 	}
 	
 	public void zero() {
@@ -80,6 +82,18 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSen
 		running = false;
 	}
 	
+	public AnalogInput getAnalogInput() {
+		return ai;
+	}
+	
+	public boolean isInverted() {
+		return inverted;
+	}
+
+	public void setInverted(boolean inverted) {
+		this.inverted = inverted;
+	}
+
 	//Implemented methods from PIDSource so this class can easily operate as a PIDSource
 	public void setPIDSourceType(PIDSourceType pidSource) {
 		this.pidSource = pidSource;
@@ -93,6 +107,7 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSen
 		switch(pidSource) {
 			case kRate:
 				return getRate();
+			case kDisplacement:
 			default:
 				return getDistance();
 		}
@@ -117,8 +132,8 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSen
 	@Override
 	public void updateTable() {
 		if (table != null) {
-			table.putNumber("Distance", realDistance);
-			table.putNumber("Rate", realRate);
+			table.putNumber("Distance", getDistance());
+			table.putNumber("Speed", getRate());
 		}
 	}
 

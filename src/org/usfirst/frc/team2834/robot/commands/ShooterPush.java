@@ -14,13 +14,12 @@ public class ShooterPush extends Command {
     public ShooterPush(boolean out) {
     	super("Shooter Push");
         requires(Robot.pusher);
-        output = out ? 1.0 : -1.0;
+        output = out ? 1.0 : 0.0;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	setTimeout(0.5);
-    	Robot.pusher.setOutput(output);
+    	Robot.pusher.setPusherPosition(output);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -29,12 +28,11 @@ public class ShooterPush extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut();
+        return true;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.pusher.setOutput(0.0);
     }
 
     // Called when another command which requires one or more of the same

@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SelectAngleSetpoint extends Command {
 
+	private final double STEP_VALUE = 2.0;
+	
     public SelectAngleSetpoint() {
         requires(Robot.shooterAngle);
     }
@@ -31,6 +33,11 @@ public class SelectAngleSetpoint extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	if(Robot.oi.stepUp.get()) {
+    		Robot.shooterAngle.setSetpointRelative(STEP_VALUE);
+    	} else if (Robot.oi.stepDown.get()) {
+    		Robot.shooterAngle.setSetpointRelative(-STEP_VALUE);
+    	}
     }
 
     // Make this return true when this Command no longer needs to run execute()

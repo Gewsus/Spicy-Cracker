@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2834.robot.commands;
+package org.usfirst.frc.team2834.robot.commands.auto;
 
 import org.usfirst.frc.team2834.robot.Robot;
 
@@ -7,32 +7,35 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class ShooterAngleOverride extends Command {
+public class DriveToOW extends Command {
 
-    public ShooterAngleOverride() {
-    	super("Shooter Angle Override");
-        requires(Robot.shooterAngle);
+    public DriveToOW() {
+    	super("Drive to Outer Works");
+        requires(Robot.drivetrain);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.shooterAngle.disable();
-    	Robot.shooterAngle.setOutput(0.0);
+    	setTimeout(6.0);
+    	Robot.drivetrain.setZero();
+    	Robot.drivetrain.enable();
+    	Robot.drivetrain.setHoldSetpoint();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.shooterAngle.setOutput(Robot.oi.operator.getY());
+    	Robot.drivetrain.haloDrive(0.5, 0.0, true);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return Robot.drivetrain.isUpSlope() || isTimedOut();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.shooterAngle.setOutput(0.0);
+    	Robot.drivetrain.disable();
+    	Robot.drivetrain.setZero();
     }
 
     // Called when another command which requires one or more of the same

@@ -16,8 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSender {
 	
-	private boolean reverse = false; //false: standard drive, true: reverse drive
+	private boolean reverse; //false: standard drive, true: reverse drive
 	private boolean driveMotors = false; //false: 4, true: 6
+	private double autoRotate = 0.0;
 	private final double CENTER_SCALE = 0.4; //Apply an exponential scale function to the input
     
 	/*
@@ -26,7 +27,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
      * 2	5
      * 1	4
      */
-    Victor motors[] = {
+    private Victor motors[] = {
     	new Victor(FRONT_LEFT_DRIVETRAIN),
     	new Victor(BACK_LEFT_DRIVETRAIN),
     	new Victor(MIDDLE_LEFT_DRIVETRAIN),
@@ -34,7 +35,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	new Victor(BACK_RIGHT_DRIVETRAIN),
     	new Victor(MIDDLE_RIGHT_DRIVETRAIN)
     };   
-    public AHRS gyro;
+    private AHRS gyro;
     
     public Drivetrain() {
     	super("Drivetrain", 0.006, 0.0, 0.0);
@@ -43,13 +44,16 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	getPIDController().setContinuous(true);
     	setAbsoluteTolerance(5.0);
     	
-    	setReverse(true);
+    	setReverse(false);
     	gyro = new AHRS(SerialPort.Port.kMXP, AHRS.SerialDataType.kProcessedData, (byte) 50);
     	gyro.zeroYaw();
     }
 
-    public void haloDrive(double power, double rotate) {
+    public void haloDrive(double power, double rotate, boolean autoAdjust) {
     	//The rotate axis must be inverted if when the robot is in reverse
+    	if(autoAdjust) {
+    		rotate += autoRotate;
+    	}
     	rotate *= reverse ? -1.0 : 1.0;
     	double left = power + rotate;
     	double right = power - rotate;
@@ -101,7 +105,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	motors[5].setInverted(!reverse);
     }
     
-    public boolean isDriveMotors() {
+    public boolean isDriveMotorsSix() {
 		return driveMotors;
 	}
 
@@ -109,10 +113,26 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 		this.driveMotors = driveMotors;
 	}
 	
-    public void initDefaultCommand() {
+    public void setAutoRotate(double autoRotate) {
+		this.autoRotate = autoRotate;
+	}
+
+    public void setHoldSetpoint() {
+    	setSetpoint(gyro.getYaw());
+    }
+    
+	public void initDefaultCommand() {
         setDefaultCommand(new HaloDrive());
     }
 
+	public boolean isUpSlope() {
+		return gyro.getPitch() > 5;
+	}
+	
+	public boolean isDownSlope() {
+		return gyro.getPitch() < -5;
+	}
+	
 	@Override
 	protected double returnPIDInput() {
 		return gyro.getYaw();
@@ -120,18 +140,22 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 
 	@Override
 	protected void usePIDOutput(double output) {
-		haloDrive(0.5, output);
+		setAutoRotate(output);
 	}
 
 	@Override
 	public void dashboardInit() {
-		SmartDashboard.putData("Gyro", gyro);
+		//SmartDashboard.putData("Gyro", gyro);
 	}
 
 	@Override
 	public void dashboardPeriodic() {
 		SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
+		SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
 		SmartDashboard.putBoolean("Gyro connected", gyro.isConnected());
+		SmartDashboard.putBoolean("Reverse", isReverse());
+		SmartDashboard.putBoolean("Drive Wheels", isDriveMotorsSix());
+		SmartDashboard.putNumber("Auto Rotate", autoRotate);
 	}
 }
 

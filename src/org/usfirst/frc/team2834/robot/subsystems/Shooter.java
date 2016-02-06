@@ -23,10 +23,10 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	
 	public PIDController leftPID;
 	public PIDController rightPID;
-	Victor leftMotor;
-	Victor rightMotor;
-	Encoder leftEncoder;
-	Encoder rightEncoder;
+	private Victor leftMotor;
+	private Victor rightMotor;
+	private Encoder leftEncoder;
+	private Encoder rightEncoder;
 	private final double P = 0.001;
 	private final double I = 0.0;
 	private final double D = 0.0;
@@ -40,11 +40,12 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
         //Initialize motors and their respective sensors
         leftMotor = new Victor(LEFT_SHOOTER_MOTOR);
         rightMotor = new Victor(RIGHT_SHOOTER_MOTOR);
-        leftEncoder = new Encoder(LEFT_SHOOTER_ENCODER_A, LEFT_SHOOTER_ENCODER_B, false, EncodingType.k4X);
-        rightEncoder = new Encoder(RIGHT_SHOOTER_ENCODER_A, RIGHT_SHOOTER_ENCODER_B, true, EncodingType.k4X);
+        leftEncoder = new Encoder(LEFT_SHOOTER_ENCODER_A, LEFT_SHOOTER_ENCODER_B, true, EncodingType.k4X);
+        rightEncoder = new Encoder(RIGHT_SHOOTER_ENCODER_A, RIGHT_SHOOTER_ENCODER_B, false, EncodingType.k4X);
         
         //Invert one motor, encoder is already set to be inverted for this motor
-        rightMotor.setInverted(true);
+        leftMotor.setInverted(true);
+        rightMotor.setInverted(false);
         
         //Ensure encoders send rate values to PID controllers and not distance
         leftEncoder.setPIDSourceType(PIDSourceType.kRate);
@@ -86,11 +87,6 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
     	rightMotor.set(right);
     }
     
-    /**
-     * For some reason, the code crashes when these functions are called before robotInit in
-     * the Robot class.  This method is just an easy way for robotInit to place data on
-     * the SmartDashboard for testing.
-     */
     public void dashboardInit() {
     	//Send one PIDController to the dashboard.
         //SmartDashboard will let you configure PID constants on the driver station instead of changing the code each time.

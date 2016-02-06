@@ -5,39 +5,34 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * This command is a dummy to cancel any commands running on Shooter or Shooter Angle
  */
-public class ShooterAngleOverride extends Command {
+public class FreeShooter extends Command {
 
-    public ShooterAngleOverride() {
-    	super("Shooter Angle Override");
+    public FreeShooter() {
+        requires(Robot.shooter);
         requires(Robot.shooterAngle);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.shooterAngle.disable();
-    	Robot.shooterAngle.setOutput(0.0);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.shooterAngle.setOutput(Robot.oi.operator.getY());
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.shooterAngle.setOutput(0.0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	end();
     }
 }
