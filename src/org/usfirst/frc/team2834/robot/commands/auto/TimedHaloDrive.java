@@ -12,8 +12,8 @@ public class TimedHaloDrive extends Command {
 	double power;
 	double rotate;
 	
-    public TimedHaloDrive(double power, double rotate, double seconds) {
-    	super("Timed Halo Drive: " + power + ' ' + rotate + ' ' + seconds, seconds);
+    public TimedHaloDrive(double power, double rotate, boolean sixWheel, double seconds) {
+    	super("Timed Halo Drive: " + power + ":" + rotate + ":" + sixWheel + ":" + seconds, seconds);
         requires(Robot.drivetrain);
         this.power = power;
         this.rotate = rotate;
@@ -26,7 +26,7 @@ public class TimedHaloDrive extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(power, rotate, false);
+    	Robot.drivetrain.haloDrive(-power, rotate, false);
     }
 
     // Make this return true when this Command no longer needs to run execute()

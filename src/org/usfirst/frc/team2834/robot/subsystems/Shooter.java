@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Subsystem that controls the shooting functionality of the robot
  */
 /**
- * @author Adam
+ * @author Adam Raine
  *
  */
 public class Shooter extends Subsystem implements RobotMap, DashboardSender {
@@ -27,11 +27,11 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private Victor rightMotor;
 	private Encoder leftEncoder;
 	private Encoder rightEncoder;
-	private final double P = 0.001;
-	private final double I = 0.0;
+	private final double P = 0.0000005;
+	private final double I = 0.00001;
 	private final double D = 0.0;
-	private final double F = 0.001;
-	public static final double DEFAULT_SETPOINT = 2000.0;
+	private final double F = 0.00001;
+	public static final double DEFAULT_SETPOINT = 50000.0;
 	
     // Initialize your subsystem here
     public Shooter() {
@@ -54,10 +54,12 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
         //Initialize PID values for the shooter
         leftPID = new PIDController(P, I, D, F, leftEncoder, leftMotor);
         leftPID.setOutputRange(0.0, 1.0);
-        leftPID.setAbsoluteTolerance(50.0);
+        leftPID.setAbsoluteTolerance(1000.0);
+        leftPID.setToleranceBuffer(5);
         rightPID = new PIDController(P, I, D, F, rightEncoder, rightMotor);
         rightPID.setOutputRange(0.0, 1.0);
-        rightPID.setAbsoluteTolerance(50.0);
+        rightPID.setAbsoluteTolerance(1000.0);
+        rightPID.setToleranceBuffer(5);
     }
     
     public void setEnabled(boolean enable) {
@@ -88,16 +90,24 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
     }
     
     public void dashboardInit() {
-    	//Send one PIDController to the dashboard.
-        //SmartDashboard will let you configure PID constants on the driver station instead of changing the code each time.
-        //This only needs to be sent once, SD will periodically send and recieve data from objects like PIDController
-        SmartDashboard.putData("Shooter Right PID", rightPID);
-        SmartDashboard.putData("Shooter Left Encoder", leftEncoder);
-    	SmartDashboard.putData("Shooter Right Encoder", rightEncoder);
+        //SmartDashboard.putData("Shooter Left PID", leftPID);
+    	//SmartDashboard.putData("Test Setpoint", new ShooterSetSetpoint(40000));
+    	//SmartDashboard.putData("Right Shooter PID", rightPID);
     }
     
     @Override
 	public void dashboardPeriodic() {
+    	SmartDashboard.putNumber("Right Encoder", rightEncoder.getRate());
+    	SmartDashboard.putNumber("Left Encoder", leftEncoder.getRate());
+    	SmartDashboard.putNumber("Left Error", leftPID.getError());
+    	SmartDashboard.putNumber("Right Error", rightPID.getError());
+    	SmartDashboard.putBoolean("Left Ready", isLeftOnTarget());
+    	SmartDashboard.putBoolean("Right Ready", isRightOnTarget());
+    	/*double p = SmartDashboard.getNumber("Shooter P", P);
+    	double i = SmartDashboard.getNumber("Shooter I", I);
+    	double d = SmartDashboard.getNumber("Shooter D", D);
+    	leftPID.setPID(p, i, d);
+    	rightPID.setPID(p, i, d);*/
 	}
 
 	public void initDefaultCommand() {

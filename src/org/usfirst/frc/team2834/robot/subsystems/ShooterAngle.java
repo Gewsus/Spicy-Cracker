@@ -19,18 +19,23 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
 	//private double angleZero;  //Reading from the encoder at the start of the match
 	public static final double UPPER_SETPOINT = 0.0;
 	public static final double MIDDLE_SETPOINT = 16.0;
-	public static final double LOWER_SETPOINT = 32.0;
-	public static final double MAX_ANGLE_RADIANS = (7.0 / 9.0) * Math.PI;
+	public static final double LOWER_SETPOINT = 27.0;
+	private static final double MAX_ANGLE_RADIANS = (7.0 / 9.0) * Math.PI;
+	private static final double POWER_PROPORTION = 0.15;
+	//private final int[] inputTable = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, Integer.MAX_VALUE};
+	//private final double[] outputTable = {};
 	
 	public ShooterAngle() {
 		super("Shooter Angle", 0.0156, 0.0, 0.0);
 		angleEncoder = new AnalogAbsoluteEncoder(SHOOTER_ANGLE_ENCODER);
 		angleMotor = new Victor(SHOOTER_ANGLE_MOTOR);
 		angleEncoder.setInverted(true);
+		angleEncoder.getAnalogInput().setAverageBits(0);
+		angleEncoder.getAnalogInput().setOversampleBits(0);
 		//Initialize PID values for the angle of the shooter
         //setInputRange(0.015, 4.987);
         setOutputRange(-0.5, 0.5);
-        setAbsoluteTolerance(0.014);
+        setAbsoluteTolerance(0.5);
         //setContinuous(true);
         //zeroAngle();
 	}
@@ -39,22 +44,6 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
-
-    /*@Override
-    public void setSetpoint(double setpoint) {
-    	if(setpoint > 90) {
-			setpoint = 90;
-		} else if(setpoint < 0) {
-			setpoint = 0;
-		}
-		double newSetpoint = angleZero - (4.972 * setpoint / 360.0);
-		if(newSetpoint < 0.015) {
-			newSetpoint += 4.972;
-		} else if(newSetpoint > 4.987) {
-			newSetpoint -= 4.972;
-		}
-    	super.setSetpoint(newSetpoint);
-    }*/
     
     public void setOutput(double output) {
     	angleMotor.set(output);
@@ -74,7 +63,15 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
      * @return Power for a motor [-1.0, 1.0]
      */
     public double getPowerByAngle() {
-    	return 0.67543 * Math.cos((1.0 - (angleEncoder.getDistance() / LOWER_SETPOINT)) * MAX_ANGLE_RADIANS);
+    	return SmartDashboard.getNumber("Angle proportion", POWER_PROPORTION) * Math.cos(getRealAngle());
+    }
+    
+    public double getRealAngle() {
+    	return (1.0 - (angleEncoder.getDistance() / LOWER_SETPOINT)) * MAX_ANGLE_RADIANS;
+    }
+    
+    public double realAngleToVoltage(double angle) {
+    	return (1.0 - (angle / MAX_ANGLE_RADIANS)) * LOWER_SETPOINT;
     }
     
 	protected double returnPIDInput() {
@@ -82,13 +79,30 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
 	}
 
 	protected void usePIDOutput(double output) {
-		angleMotor.set(getPowerByAngle() + output);
+		if(output < 0.0) {
+			output -= 0.15;
+		} else {
+			output += 0.15;
+		}
+		angleMotor.set(output);
 	}
 
+	/*public double getTableOutput() {
+		int id = 0;
+		double dist = angleEncoder.getDistance();
+		//Find which id the distance corresponds to
+		for(int i = 0; i < inputTable.length - 1; i++) {
+			if(dist > inputTable[i] && dist < inputTable[i + 1]) {
+				id = i;
+			}
+		}
+		return (((outputTable[id + 1] - outputTable[id]) / 2.0) * (dist - inputTable[id])) + outputTable[id];
+	}*/
+	
 	@Override
 	public void dashboardInit() {
-		SmartDashboard.putData("Angle Encoder", angleEncoder);
 		SmartDashboard.putData("Angle PID", getPIDController());
+		SmartDashboard.putNumber("Angle proportion", POWER_PROPORTION);
 	}
 
 	@Override
@@ -98,6 +112,8 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
 		SmartDashboard.putNumber("Angle Error", getPIDController().getError());
 		SmartDashboard.putNumber("Angle Power By Angle", getPowerByAngle());
 		SmartDashboard.putNumber("Angle Comp", getPowerByAngle() + getPIDController().get());
+		SmartDashboard.putBoolean("Angle on Target", onTarget());
+		SmartDashboard.putNumber("Real Angle", getRealAngle());
 	}
 }
 

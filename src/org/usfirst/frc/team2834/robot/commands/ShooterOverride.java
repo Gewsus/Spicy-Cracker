@@ -22,7 +22,7 @@ public class ShooterOverride extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.shooter.setShooterOutput(Robot.oi.operator.getY(), Robot.oi.operator.getY());
+    	Robot.shooter.setShooterOutput(-Robot.oi.operator.getY(), -Robot.oi.operator.getY());
     }
 
     // Make this return true when this Command no longer needs to run execute()

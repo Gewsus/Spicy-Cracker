@@ -10,7 +10,7 @@ public class ShooterPushToShoot extends CommandGroup {
     
     public  ShooterPushToShoot() {
         addSequential(new ShooterPush(true));
-        addSequential(new WaitCommand(1.0));
+        addSequential(new WaitCommand(1.5));
         addSequential(new ShooterPush(false));
     }
 }

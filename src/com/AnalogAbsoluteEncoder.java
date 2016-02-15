@@ -132,8 +132,9 @@ public class AnalogAbsoluteEncoder implements Runnable, PIDSource, LiveWindowSen
 	@Override
 	public void updateTable() {
 		if (table != null) {
-			table.putNumber("Distance", getDistance());
 			table.putNumber("Speed", getRate());
+			table.putNumber("Distance", getDistance());
+			table.putNumber("Distance per Tick", 0.0);
 		}
 	}
 

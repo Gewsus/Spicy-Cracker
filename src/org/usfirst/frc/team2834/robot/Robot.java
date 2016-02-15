@@ -8,7 +8,6 @@ import org.usfirst.frc.team2834.robot.subsystems.*;
 import com.DashboardSender;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -29,8 +28,8 @@ public class Robot extends IterativeRobot {
     public static Shooter shooter = new Shooter();
     public static ShooterAngle shooterAngle = new ShooterAngle();
     public static Pusher pusher = new Pusher();
-    private CommandGroup auto = new CommandGroup();
-
+    
+    private CommandGroup auto;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -57,32 +56,10 @@ public class Robot extends IterativeRobot {
 	 * This function is called once before autonomous period starts
 	 */
     public void autonomousInit() {
-    	//Select autonomous mode based on input from dashboard
-    	int mode = (int) SmartDashboard.getNumber("Auto Mode", 0);
-    	int position = (int) SmartDashboard.getNumber("Auto Position", 0);
-    	int defense = (int) SmartDashboard.getNumber("Auto Defense", 0);
-    	boolean direction = SmartDashboard.getBoolean("Auto Direction");
-    	
-    	//Swap the driving direction if the user wants to
-    	if(direction) {
-    		new ToggleDriveReverse().start();
-    	}
-    	
-		if(mode >= 1 && position != 5) {
-			auto.addSequential(new DriveToOW());
-			if(mode >= 2) {
-				switch(defense) {
-					//Add code for each defense here
-				}
-				if(mode >= 3) {
-					//add code to turn and shoot here
-				}
-			}
-		} else if(mode == 3 && position == 5) {
-			//add code to shoot from spy
-		}
-    	
-        if (auto != null) auto.start();
+    	Robot.drivetrain.rezero();
+    	Robot.shooterAngle.zero();
+    	auto = new AutonomousCommand();
+		if (auto != null) auto.start();
     }
 
     /**

@@ -18,8 +18,11 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	
 	private boolean reverse; //false: standard drive, true: reverse drive
 	private boolean driveMotors = false; //false: 4, true: 6
+	public double startingAngle = 0.0; //The robot may start pointing in different directions
 	private double autoRotate = 0.0;
 	private final double CENTER_SCALE = 0.4; //Apply an exponential scale function to the input
+	private final double TOLERANCE = 1.5; //Value on either side of setpoint to register on target
+	private final double FEED_FORWARD = 0.7; //Value required for the drivetrain to actually move.  Thanks build team.
     
 	/*
      * Order goes:
@@ -38,13 +41,14 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     private AHRS gyro;
     
     public Drivetrain() {
-    	super("Drivetrain", 0.006, 0.0, 0.0);
+    	super("Drivetrain", 0.0005, 0.0001, 0.0);
     	setInputRange(-180.0, 180.0);
     	setOutputRange(-1.0, 1.0);
     	getPIDController().setContinuous(true);
-    	setAbsoluteTolerance(5.0);
+    	setAbsoluteTolerance(TOLERANCE);
+    	getPIDController().setToleranceBuffer(5);
     	
-    	setReverse(false);
+    	setReverse(true);
     	gyro = new AHRS(SerialPort.Port.kMXP, AHRS.SerialDataType.kProcessedData, (byte) 50);
     	gyro.zeroYaw();
     }
@@ -54,10 +58,17 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	if(autoAdjust) {
     		rotate += autoRotate;
     	}
-    	rotate *= reverse ? -1.0 : 1.0;
+    	if(reverse) {
+    		rotate *= -1.0;
+    	}
     	double left = power + rotate;
     	double right = power - rotate;
     	setOutput(left, right, false);
+    }
+    
+	@Override
+    public void setSetpointRelative(double setpointRelative) {
+    	setSetpoint(coerceToYawRange(setpointRelative + returnPIDInput()));
     }
     
     public void setOutput(double left, double right, boolean scaleCenter) {
@@ -91,6 +102,10 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	setOutput(0, 0, false);
     }
     
+    public void rezero() {
+    	gyro.zeroYaw();
+    }
+    
     public boolean isReverse() {
 		return reverse;
 	}
@@ -112,13 +127,9 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	public void setDriveMotors(boolean driveMotors) {
 		this.driveMotors = driveMotors;
 	}
-	
-    public void setAutoRotate(double autoRotate) {
-		this.autoRotate = autoRotate;
-	}
 
-    public void setHoldSetpoint() {
-    	setSetpoint(gyro.getYaw());
+    public double getYaw() {
+    	return gyro.getYaw() + startingAngle;
     }
     
 	public void initDefaultCommand() {
@@ -126,36 +137,64 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     }
 
 	public boolean isUpSlope() {
-		return gyro.getPitch() > 5;
+		return gyro.getPitch() > 2.5;
 	}
 	
 	public boolean isDownSlope() {
-		return gyro.getPitch() < -5;
+		return gyro.getPitch() < -2.5;
+	}
+	
+	private double coerceToYawRange(double yaw) {
+		if(yaw < -180) {
+    		return coerceToYawRange(yaw += 360);
+    	} else if(yaw > 180) {
+    		return coerceToYawRange(yaw -= 360);
+    	}
+		return yaw;
 	}
 	
 	@Override
 	protected double returnPIDInput() {
-		return gyro.getYaw();
+		return coerceToYawRange(getYaw());
 	}
 
 	@Override
 	protected void usePIDOutput(double output) {
-		setAutoRotate(output);
+		if (onTarget()) {
+			autoRotate = 0.0;
+		} else {
+			//The robot this year does not rotate unless a considerable amount of power is applied
+			//This code adds a constant feed forward to the PID output to ensure the robot does this.
+			if (output < 0.0) {
+				output -= FEED_FORWARD;
+			} else if (output > 0.0) {
+				output += FEED_FORWARD;
+			}
+			autoRotate = output;
+		}
 	}
 
+	@Override
+	public boolean onTarget() {
+		return Math.abs(getPIDController().getError()) < TOLERANCE;
+	}
+	
 	@Override
 	public void dashboardInit() {
 		//SmartDashboard.putData("Gyro", gyro);
+		//SmartDashboard.putData("Gyro PID", getPIDController());
 	}
-
+	
 	@Override
 	public void dashboardPeriodic() {
-		SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
+		SmartDashboard.putNumber("Gyro Yaw", getYaw());
 		SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
 		SmartDashboard.putBoolean("Gyro connected", gyro.isConnected());
 		SmartDashboard.putBoolean("Reverse", isReverse());
 		SmartDashboard.putBoolean("Drive Wheels", isDriveMotorsSix());
 		SmartDashboard.putNumber("Auto Rotate", autoRotate);
+		SmartDashboard.putBoolean("Gyro On Target", onTarget());
+		SmartDashboard.putNumber("Gyro Setpoint", getSetpoint());
 	}
 }
 

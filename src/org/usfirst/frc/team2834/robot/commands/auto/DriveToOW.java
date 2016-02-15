@@ -19,12 +19,11 @@ public class DriveToOW extends Command {
     	setTimeout(6.0);
     	Robot.drivetrain.setZero();
     	Robot.drivetrain.enable();
-    	Robot.drivetrain.setHoldSetpoint();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(0.5, 0.0, true);
+    	Robot.drivetrain.haloDrive(-0.3, 0.0, false);
     }
 
     // Make this return true when this Command no longer needs to run execute()

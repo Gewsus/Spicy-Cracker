@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.*;
+import org.usfirst.frc.team2834.robot.commands.auto.*;
 
 import com.DashboardSender;
 
@@ -56,8 +57,9 @@ public class OI implements RobotMap, DashboardSender {
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
 		setDriveMotors.whenReleased(new SetDriveSixWheels(false));
 		setDriveReverse.whenPressed(new ToggleDriveReverse());
-		//shoot.whenPressed(new ShooterPushToShoot());
-		//defaultSetpoint.whileHeld(new ShooterSetSetpoints());
+		shoot.whenPressed(new ShooterPushToShoot());
+		defaultSetpoint.whileHeld(new ShooterSetSetpoint(44500));
+		defaultSetpoint.whenReleased(new FreeShooter());
 		shooterOverride.whileHeld(new ShooterOverride());
 		angleOverride.whileHeld(new ShooterAngleOverride());
 		//selectSetpoint.whenPressed(new SelectAngleSetpoint());
@@ -67,6 +69,13 @@ public class OI implements RobotMap, DashboardSender {
 	@Override
 	public void dashboardInit() {
 		SmartDashboard.putData(new ZeroShooterAngle());
+		SmartDashboard.putData(new RotateAngle(90, 0));
+		SmartDashboard.putData(new DoLowBar());
+		SmartDashboard.putData(new DriveToOW());
+		SmartDashboard.putData(new CenterOnGoal());
+		SmartDashboard.putData(new CenterOnGoal());
+		SmartDashboard.putData(new ShooterTestSetpoint());
+		SmartDashboard.putData(new ShooterSetpointByDistance());
 		SmartDashboard.putData("Scheduler", Scheduler.getInstance());
 	}
 
