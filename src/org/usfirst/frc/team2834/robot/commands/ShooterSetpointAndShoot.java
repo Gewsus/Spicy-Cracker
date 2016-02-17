@@ -21,6 +21,7 @@ public class ShooterSetpointAndShoot extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.shooter.reset();
     	Robot.shooter.setShooterSetpoints(setpoint, setpoint);
     	Robot.shooter.setEnabled(true);
     }
@@ -41,10 +42,14 @@ public class ShooterSetpointAndShoot extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.shooter.setEnabled(false);
+    	Robot.shooter.setShooterOutput(0, 0);
+    	Robot.pusher.setPusherPosition(0.0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 }

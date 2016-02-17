@@ -1,8 +1,8 @@
 
 package org.usfirst.frc.team2834.robot;
 
-import org.usfirst.frc.team2834.robot.commands.*;
-import org.usfirst.frc.team2834.robot.commands.auto.*;
+import org.usfirst.frc.team2834.robot.commands.FreeShooter;
+import org.usfirst.frc.team2834.robot.commands.auto.AutonomousCommand;
 import org.usfirst.frc.team2834.robot.subsystems.*;
 
 import com.DashboardSender;
@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -71,6 +70,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
+    	new FreeShooter().start();
         if (auto != null) auto.cancel();
     }
 

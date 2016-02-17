@@ -13,7 +13,7 @@ public class TimedHaloDrive extends Command {
 	double rotate;
 	
     public TimedHaloDrive(double power, double rotate, boolean sixWheel, double seconds) {
-    	super("Timed Halo Drive: " + power + ":" + rotate + ":" + sixWheel + ":" + seconds, seconds);
+    	super("Timed Halo Drive: " + power + "|" + rotate + "|" + sixWheel + "|" + seconds, seconds);
         requires(Robot.drivetrain);
         this.power = power;
         this.rotate = rotate;

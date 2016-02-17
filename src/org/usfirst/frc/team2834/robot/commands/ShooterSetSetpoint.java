@@ -22,7 +22,7 @@ public class ShooterSetSetpoint extends Command {
     }
     
     public ShooterSetSetpoint(double leftSetpoint, double rightSetpoint) {
-    	super("Shooter set setpoint: " + leftSetpoint + ":" + rightSetpoint, 5.0);
+    	super("Shooter set setpoint: " + leftSetpoint + " : " + rightSetpoint, 10);
     	requires(Robot.shooter);
         this.leftSetpoint = leftSetpoint;
         this.rightSetpoint = rightSetpoint;
@@ -30,6 +30,7 @@ public class ShooterSetSetpoint extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.shooter.reset();
     	Robot.shooter.setEnabled(true);
     	Robot.shooter.setShooterSetpoints(leftSetpoint, rightSetpoint);
     }

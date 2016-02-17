@@ -13,7 +13,7 @@ public class TimedShooterAngle extends Command {
 	double seconds;
 
     public TimedShooterAngle(double power, double seconds) {
-        super("Timed Shooter Angle: " + power + "-" + seconds);
+        super("Timed Shooter Angle: " + power + "|" + seconds);
         requires(Robot.shooterAngle);
         this.power = power;
         this.seconds = seconds;

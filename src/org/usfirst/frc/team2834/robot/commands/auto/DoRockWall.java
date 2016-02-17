@@ -12,8 +12,9 @@ public class DoRockWall extends CommandGroup {
     public  DoRockWall() {
     	super("Do Rock Wall");
         addSequential(new SetDriveSixWheels(true));
-        addSequential(new TimedHaloDrive(0.5, 0.0, true, 4));
-        addSequential(new TimedHaloDrive(-0.1, 0.0, false, 0.1));
+        addParallel(new TimedShooterAngle(0.1, 2.1));
+        addSequential(new TimedHaloDrive(0.75, 0.0, true, 1.75));
+        addSequential(new TimedHaloDrive(-0.25, 0.0, false, 0.25));
         addSequential(new SetDriveSixWheels(false));
     }
 }

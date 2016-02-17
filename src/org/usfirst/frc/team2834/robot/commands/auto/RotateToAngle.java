@@ -13,7 +13,7 @@ public class RotateToAngle extends Command {
 	double forwardPower;
 
     public RotateToAngle(double angle, double forwardPower) {
-    	super("Rotate to Angle: " + angle);
+    	super("Rotate to Angle: " + angle, 10);
         requires(Robot.drivetrain);
         this.angle = angle;
         this.forwardPower = forwardPower;
@@ -21,6 +21,7 @@ public class RotateToAngle extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.drivetrain.reset();
     	Robot.drivetrain.setZero();
     	Robot.drivetrain.setSetpoint(angle);
     	Robot.drivetrain.enable();
@@ -33,7 +34,7 @@ public class RotateToAngle extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.drivetrain.onTarget();
+        return Robot.drivetrain.onTarget() || isTimedOut();
     }
 
     // Called once after isFinished returns true

@@ -62,30 +62,48 @@ public class AutonomousCommand extends CommandGroup {
 						if (mode >= 3) {
 							switch(position) {
 								case 0:
-									addSequential(new RotateAngle(45, 0.25));
+									addSequential(new RotateToAngle(45, 0.25));
 									break;
 								case 1:
-									addSequential(new RotateAngle(30, 0.25));
+									addSequential(new RotateToAngle(30, 0.25));
 									break;
 								case 2:
-									addSequential(new RotateAngle(15, 0.25));
+									addSequential(new RotateToAngle(15, 0.25));
 									break;
 								case 3:
-									addSequential(new RotateAngle(-10, 0.25));
+									addSequential(new RotateToAngle(-10, 0.25));
 									break;
 								case 4:
-									addSequential(new RotateAngle(-20, 0.25));
+									addSequential(new RotateToAngle(-20, 0.25));
 									break;
 							}
-							addSequential(new WaitCommand(2));
+							addSequential(new WaitCommand(1));
 							addSequential(new WaitForTarget());
 							addSequential(new CenterOnGoal());
-							addSequential(new TimedHaloDrive(0.5, 0, true, 0.25));
-							addSequential(new WaitCommand(2));
-							addParallel(new CenterOnGoal());
-							addSequential(new ShooterSetSetpoint(44500));
+							if(direction) {
+								addSequential(new ToggleDriveReverse());
+							}
+							switch(position) {
+							case 0:
+							case 1:
+								addSequential(new TimedHaloDrive(0.5, 0, true, 0.6));
+								break;
+							case 4:
+								addSequential(new TimedHaloDrive(0.5, 0, true, 0.55));
+								break;
+							case 3:
+								addSequential(new TimedHaloDrive(0.5, 0, true, 0.25));
+								break;
+							default:
+								addSequential(new TimedHaloDrive(0.5, 0, true, 0.3));
+								break;
+							}
+							addSequential(new TimedHaloDrive(-0.1, 0, true, 0.1));
 							addSequential(new WaitCommand(1));
-							addSequential(new ShooterPushToShoot());
+							addSequential(new CenterOnGoal());
+							//addSequential(new CenterOnGoal());
+							addParallel(new ShooterSetSetpoint(44500));
+							addSequential(new WaitAndShoot());
 							addSequential(new FreeShooter());
 						}
 					}
@@ -100,5 +118,12 @@ public class AutonomousCommand extends CommandGroup {
 				}
 			} 
 		}
+    }
+    
+    private class WaitAndShoot extends CommandGroup {
+    	public WaitAndShoot() {
+    		addSequential(new WaitCommand(2));
+			addSequential(new ShooterPushToShoot());
+    	}
     }
 }

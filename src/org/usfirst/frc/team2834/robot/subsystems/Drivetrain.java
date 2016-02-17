@@ -21,8 +21,8 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	public double startingAngle = 0.0; //The robot may start pointing in different directions
 	private double autoRotate = 0.0;
 	private final double CENTER_SCALE = 0.4; //Apply an exponential scale function to the input
-	private final double TOLERANCE = 1.5; //Value on either side of setpoint to register on target
-	private final double FEED_FORWARD = 0.7; //Value required for the drivetrain to actually move.  Thanks build team.
+	private final double TOLERANCE = 2; //Value on either side of setpoint to register on target
+	private final double FEED_FORWARD = 0.6; //Value required for the drivetrain to actually move.  Thanks build team.
     
 	/*
      * Order goes:
@@ -71,6 +71,10 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	setSetpoint(coerceToYawRange(setpointRelative + returnPIDInput()));
     }
     
+	public void reset() {
+		getPIDController().reset();
+	}
+	
     public void setOutput(double left, double right, boolean scaleCenter) {
     	motors[0].set(left);
     	motors[1].set(left);
@@ -129,7 +133,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	}
 
     public double getYaw() {
-    	return gyro.getYaw() + startingAngle;
+    	return coerceToYawRange(gyro.getYaw() + startingAngle);
     }
     
 	public void initDefaultCommand() {
@@ -137,11 +141,11 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     }
 
 	public boolean isUpSlope() {
-		return gyro.getPitch() > 2.5;
+		return gyro.getPitch() > 5;
 	}
 	
 	public boolean isDownSlope() {
-		return gyro.getPitch() < -2.5;
+		return gyro.getPitch() < -5;
 	}
 	
 	private double coerceToYawRange(double yaw) {
@@ -155,7 +159,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	
 	@Override
 	protected double returnPIDInput() {
-		return coerceToYawRange(getYaw());
+		return getYaw();
 	}
 
 	@Override

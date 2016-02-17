@@ -33,6 +33,7 @@ public class OI implements RobotMap, DashboardSender {
 	public final JoystickButton angleOverride;
 	public final JoystickButton selectSetpoint;
 	public final JoystickButton cancelShooter;
+	public final JoystickButton autoRotate;
 	
 	public OI() {
 		//Initialize joysticks
@@ -52,6 +53,7 @@ public class OI implements RobotMap, DashboardSender {
 		angleOverride = new JoystickButton(operator, SHOOTER_ANGLE_OVERRIDE_BUTTON);
 		selectSetpoint = new JoystickButton(operator, SELECT_SHOOTER_ANGLE_SETPOINT_BUTTON);
 		cancelShooter = new JoystickButton(operator, CANCEL_SHOOTER_COMMANDS);
+		autoRotate = new JoystickButton(rightDrive, ROTATE_ON_TARGET);
 		
 		//Set button functions
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
@@ -64,16 +66,17 @@ public class OI implements RobotMap, DashboardSender {
 		angleOverride.whileHeld(new ShooterAngleOverride());
 		//selectSetpoint.whenPressed(new SelectAngleSetpoint());
 		cancelShooter.whenPressed(new FreeShooter());
+		autoRotate.whenPressed(new CenterOnGoal());
 	}
 
 	@Override
 	public void dashboardInit() {
 		SmartDashboard.putData(new ZeroShooterAngle());
-		SmartDashboard.putData(new RotateAngle(90, 0));
+		SmartDashboard.putData(new RotateToAngle(90, 0));
 		SmartDashboard.putData(new DoLowBar());
 		SmartDashboard.putData(new DriveToOW());
 		SmartDashboard.putData(new CenterOnGoal());
-		SmartDashboard.putData(new CenterOnGoal());
+		SmartDashboard.putData(new DoCheval());
 		SmartDashboard.putData(new ShooterTestSetpoint());
 		SmartDashboard.putData(new ShooterSetpointByDistance());
 		SmartDashboard.putData("Scheduler", Scheduler.getInstance());

@@ -14,6 +14,7 @@ public interface RobotMap {
 	//Joystick buttons
 	int SET_DRIVE_MOTORS_BUTTON = 1;
 	int SET_DRIVE_REVERSE_BUTTON  = 1;
+	int ROTATE_ON_TARGET = 3;
 	int SHOOT_BUTTON = 1;
 	int SHOOTER_STEP_UP_BUTTON = 3;
 	int SHOOTER_STEP_DOWN_BUTTON = 2;

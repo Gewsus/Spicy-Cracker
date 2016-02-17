@@ -31,23 +31,23 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	private final double TARGET_HEIGHT = 12.0;
 	private final double TARGET_VERTICAL_DISTANCE = 82.0;
 	private final double DIST_TO_ROTATION_CENTER = 10;
-	private double FOCAL_LENGTH = 620.0;
-	private final int SAMPLES_TO_AVERAGE = 10;
+	private double FOCAL_LENGTH = 615.0;
+	private final int SAMPLES_TO_AVERAGE = 5;
 	
 	//Image fields
-	Image frame;		//Frame that will hold the raw image from camera
-	Image binaryFrame;	//Frame depicting possible targets
-	int shooterSession;		//Session id for the processing camera
-	int groundSession; //Session if for the ground/view camera
+	private Image frame;		//Frame that will hold the raw image from camera
+	private Image binaryFrame;	//Frame depicting possible targets
+	private int shooterSession;		//Session id for the processing camera
+	//private int groundSession; //Session for the ground/view camera
 	
 	//NIVision fields
-	NIVision.ParticleFilterCriteria2 criteria[];
-	NIVision.ParticleFilterOptions2 options;
-	NIVision.ParticleReport reports[];
-	NIVision.ParticleReport best;
+	private NIVision.ParticleFilterCriteria2 criteria[];
+	private NIVision.ParticleFilterOptions2 options;
+	private NIVision.ParticleReport reports[];
+	private NIVision.ParticleReport best;
 	
 	//HSV Ranges
-	NIVision.Range HRange, SRange, LRange;
+	private NIVision.Range HRange, SRange, LRange;
 	
 	public Vision() {
 		super("Vision");
@@ -80,6 +80,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		//FRC crashes the program if the camera does not exist and you try to run this code
 		//so i made it easy to just disable the camera if it is disconnected.
 		try {
+			Timer.delay(10);
 			shooterSession = NIVision.IMAQdxOpenCamera("cam1",
 					NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(shooterSession);
@@ -148,27 +149,31 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     }
     
     public void run() {
-    	//Continuously grab images, possible process, and feed them to the dashboard.
-    	while(true) {
-			if(shooterView) {
-				NIVision.IMAQdxGrab(shooterSession, frame, 1);
-				FRAME_WIDTH = NIVision.imaqGetImageSize(binaryFrame).width;
-				CameraServer.getInstance().setImage(frame);
-			} else {
-				//NIVision.IMAQdxGrab(groundSession, frame, 1);
-				//CameraServer.getInstance().setImage(frame);
+    	try {
+			//Continuously grab images, possible process, and feed them to the dashboard.
+			while(true) {
+				if(shooterView) {
+					NIVision.IMAQdxGrab(shooterSession, frame, 1);
+					FRAME_WIDTH = NIVision.imaqGetImageSize(binaryFrame).width;
+					CameraServer.getInstance().setImage(frame);
+				} else {
+					//NIVision.IMAQdxGrab(groundSession, frame, 1);
+					//CameraServer.getInstance().setImage(frame);
+				}
 			}
-    	}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
     public void calcDistance() {
     	//double h = best.projectionY;
     	double w = best.projectionX;
-		FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 560); //Coefficient for the relation between a camera image and actual dimensions
+		FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 615); //Coefficient for the relation between a camera image and actual dimensions
 		//alpha = Math.asin((2 * TARGET_VERTICAL_DISTANCE * h) / (FOCAL_LENGTH * TARGET_HEIGHT)) / 2.0;
 		distance = TARGET_VERTICAL_DISTANCE / Math.tan(alpha);
 		beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
-		gamma = 2.0 * Math.atan(((best.boundingBox.left + (best.boundingBox.width / 2.0)) - (FRAME_WIDTH / 2.0)) / FOCAL_LENGTH);
+		gamma = 2.0 * Math.atan(((best.boundingBox.left + (best.boundingBox.width / 2.0)) - (FRAME_WIDTH / 2.0)) / 620);
 		delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) /
 				Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));
     }
@@ -240,8 +245,8 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	SmartDashboard.putNumber("Gamma", getGamma());
     	SmartDashboard.putNumber("Delta", getDelta());
     	if (isGoal) {
-			SmartDashboard.putNumber("Height", best.projectionY);
-			SmartDashboard.putNumber("Width", best.projectionX);
+			//SmartDashboard.putNumber("Height", best.projectionY);
+			//SmartDashboard.putNumber("Width", best.projectionX);
 		}
 	}
 }

@@ -13,7 +13,6 @@ public class SetVisionProcessing extends Command {
 
     public SetVisionProcessing(boolean processing) {
     	super("Set Vision Processing: " + (processing ? "on" : "off"));
-    	requires(Robot.vision);
     	this.processing = processing;
     }
 
