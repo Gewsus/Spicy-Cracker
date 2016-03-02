@@ -2,9 +2,9 @@ package org.usfirst.frc.team2834.robot.subsystems;
 
 import org.usfirst.frc.team2834.robot.RobotMap;
 
-import com.AnalogAbsoluteEncoder;
 import com.DashboardSender;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,32 +12,27 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Subsystem that controls what angle the shooter is at
  */
-public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSender {
+public class Angler extends PIDSubsystem implements RobotMap, DashboardSender {
     
-	AnalogAbsoluteEncoder angleEncoder;
-	Victor angleMotor;
-	//private double angleZero;  //Reading from the encoder at the start of the match
+	//AnalogAbsoluteEncoder angleEncoder;
+	Victor anglerMotor;
+	Encoder anglerEncoder;
 	public static final double UPPER_SETPOINT = 0.0;
-	public static final double MIDDLE_SETPOINT = 16.0;
-	public static final double LOWER_SETPOINT = 27.0;
-	private static final double MAX_ANGLE_RADIANS = (7.0 / 9.0) * Math.PI;
-	private static final double POWER_PROPORTION = 0.15;
+	public static final double VERTICAL_SETPOINT = 35.0;
+	public static final double MIDDLE_SETPOINT = 25.0;
+	public static final double LOWER_SETPOINT = 100.0;
+	//private final double MAX_ANGLE_RADIANS = (7.0 / 9.0) * Math.PI;
+	//private final double POWER_PROPORTION = 0.15;
 	//private final int[] inputTable = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, Integer.MAX_VALUE};
 	//private final double[] outputTable = {};
 	
-	public ShooterAngle() {
-		super("Shooter Angle", 0.0156, 0.0, 0.0);
-		angleEncoder = new AnalogAbsoluteEncoder(SHOOTER_ANGLE_ENCODER);
-		angleMotor = new Victor(SHOOTER_ANGLE_MOTOR);
-		angleEncoder.setInverted(true);
-		angleEncoder.getAnalogInput().setAverageBits(0);
-		angleEncoder.getAnalogInput().setOversampleBits(0);
+	public Angler() {
+		super("Angler", -0.004, -0.0000025, 0.0);
+		anglerMotor = new Victor(ANGLER_MOTOR);
+		anglerEncoder = new Encoder(ANGLER_ENCODER_A, ANGLER_ENCODER_B);
 		//Initialize PID values for the angle of the shooter
-        //setInputRange(0.015, 4.987);
         setOutputRange(-0.5, 0.5);
-        setAbsoluteTolerance(0.5);
-        //setContinuous(true);
-        //zeroAngle();
+        getPIDController().setAbsoluteTolerance(5);
 	}
 	
     public void initDefaultCommand() {
@@ -46,11 +41,15 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
     }
     
     public void setOutput(double output) {
-    	angleMotor.set(output);
+    	anglerMotor.set(output);
+    }
+    
+    public void reset() {
+    	getPIDController().reset();
     }
     
     public void zero() {
-    	angleEncoder.zero();
+    	anglerEncoder.reset();
     }
     
     /**
@@ -62,29 +61,24 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
      * 
      * @return Power for a motor [-1.0, 1.0]
      */
-    public double getPowerByAngle() {
+    /*public double getPowerByAngle() {
     	return SmartDashboard.getNumber("Angle proportion", POWER_PROPORTION) * Math.cos(getRealAngle());
     }
     
     public double getRealAngle() {
-    	return (1.0 - (angleEncoder.getDistance() / LOWER_SETPOINT)) * MAX_ANGLE_RADIANS;
+    	return (1.0 - (anglerEncoder.getDistance() / LOWER_SETPOINT)) * MAX_ANGLE_RADIANS;
     }
     
     public double realAngleToVoltage(double angle) {
     	return (1.0 - (angle / MAX_ANGLE_RADIANS)) * LOWER_SETPOINT;
-    }
+    }*/
     
 	protected double returnPIDInput() {
-		return angleEncoder.getDistance();
+		return anglerEncoder.getDistance();
 	}
 
 	protected void usePIDOutput(double output) {
-		if(output < 0.0) {
-			output -= 0.15;
-		} else {
-			output += 0.15;
-		}
-		angleMotor.set(output);
+		anglerMotor.set(output);
 	}
 
 	/*public double getTableOutput() {
@@ -101,19 +95,18 @@ public class ShooterAngle extends PIDSubsystem implements RobotMap, DashboardSen
 	
 	@Override
 	public void dashboardInit() {
-		SmartDashboard.putData("Angle PID", getPIDController());
-		SmartDashboard.putNumber("Angle proportion", POWER_PROPORTION);
+		//SmartDashboard.putData("Angle PID", getPIDController());
+		//SmartDashboard.putNumber("Angle proportion", POWER_PROPORTION);
 	}
 
 	@Override
 	public void dashboardPeriodic() {
-		SmartDashboard.putNumber("Angle Voltage", angleEncoder.getAnalogInput().getVoltage());
-		SmartDashboard.putNumber("Angle Distance", angleEncoder.getDistance());
-		SmartDashboard.putNumber("Angle Error", getPIDController().getError());
-		SmartDashboard.putNumber("Angle Power By Angle", getPowerByAngle());
-		SmartDashboard.putNumber("Angle Comp", getPowerByAngle() + getPIDController().get());
+		SmartDashboard.putNumber("Angle Distance", anglerEncoder.getDistance());
+		//SmartDashboard.putNumber("Angle Error", getPIDController().getError());
+		//SmartDashboard.putNumber("Angle Power By Angle", getPowerByAngle());
+		//SmartDashboard.putNumber("Angle Comp", getPowerByAngle() + getPIDController().get());
 		SmartDashboard.putBoolean("Angle on Target", onTarget());
-		SmartDashboard.putNumber("Real Angle", getRealAngle());
+		//SmartDashboard.putNumber("Real Angle", getRealAngle());
 	}
 }
 

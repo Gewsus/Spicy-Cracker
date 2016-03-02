@@ -7,18 +7,21 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class SetVisionProcessing extends Command {
+public class AnglerGotoSetpoint extends Command {
 	
-	boolean processing;
+	double setpoint;
 
-    public SetVisionProcessing(boolean processing) {
-    	super("Set Vision Processing: " + (processing ? "on" : "off"));
-    	this.processing = processing;
+    public AnglerGotoSetpoint(double setpoint) {
+        super("Angle goto Setpoint: " + setpoint);
+        requires(Robot.angler);
+        this.setpoint = setpoint;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.vision.setProcessImage(processing);
+    	Robot.angler.setOutput(0.0);
+    	Robot.angler.setSetpoint(setpoint);
+    	Robot.angler.enable();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -27,15 +30,18 @@ public class SetVisionProcessing extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return Robot.angler.onTarget();
     }
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.angler.disable();
+    	Robot.angler.setOutput(0.0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 }

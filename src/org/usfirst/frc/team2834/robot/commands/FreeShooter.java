@@ -10,14 +10,17 @@ import edu.wpi.first.wpilibj.command.Command;
 public class FreeShooter extends Command {
 
     public FreeShooter() {
+    	super("Free shooter");
         requires(Robot.shooter);
-        requires(Robot.shooterAngle);
+        requires(Robot.angler);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.shooter.setEnabled(false);
+    	Robot.shooter.disable();
     	Robot.shooter.setShooterOutput(0, 0);
+    	Robot.angler.disable();
+    	Robot.angler.setOutput(0.0);
     }
 
     // Called repeatedly when this Command is scheduled to run

@@ -20,7 +20,7 @@ public class Pusher extends Subsystem implements RobotMap {
     	super("Pusher");
     	pusher = new Servo(SHOOTER_PUSH_ACTUATOR);
     	//pusher = new Victor(SHOOTER_PUSH_ACTUATOR);
-    	setPusherPosition(0.0);
+    	setPusherPosition(1.0);
     }
     
     public void setPusherPosition(double pos) {

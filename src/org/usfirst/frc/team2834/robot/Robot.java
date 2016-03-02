@@ -25,7 +25,7 @@ public class Robot extends IterativeRobot {
     public static Drivetrain drivetrain = new Drivetrain();
     public static Vision vision = new Vision();
     public static Shooter shooter = new Shooter();
-    public static ShooterAngle shooterAngle = new ShooterAngle();
+    public static Angler angler = new Angler();
     public static Pusher pusher = new Pusher();
     
     private CommandGroup auto;
@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
 	 */
     public void autonomousInit() {
     	Robot.drivetrain.rezero();
-    	Robot.shooterAngle.zero();
+    	Robot.angler.zero();
     	auto = new AutonomousCommand();
 		if (auto != null) auto.start();
     }

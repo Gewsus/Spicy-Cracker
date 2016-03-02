@@ -7,32 +7,32 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class ShooterPush extends Command {
+public class AnglerOverride extends Command {
 
-	private double output;
-	
-    public ShooterPush(boolean out) {
-    	super("Shooter Push");
-        requires(Robot.pusher);
-        output = out ? 1.0 : 0.0;
+    public AnglerOverride() {
+    	super("Angle Override");
+        requires(Robot.angler);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.pusher.setPusherPosition(output);
+    	Robot.angler.disable();
+    	Robot.angler.setOutput(0.0);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	Robot.angler.setOutput(Robot.oi.operator.getY());
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.angler.setOutput(0.0);
     }
 
     // Called when another command which requires one or more of the same

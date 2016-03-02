@@ -29,9 +29,9 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private Encoder rightEncoder;
 	private final double P = 0.0000005;
 	private final double I = 0.0;
-	private final double D = 0.00001;
-	private final double F = 0.00001;
-	public static final double DEFAULT_SETPOINT = 50000.0;
+	private final double D = 0.0;
+	private final double F = 0.000008;
+	public static final double DEFAULT_SETPOINT = 51000.0;
 	
     // Initialize your subsystem here
     public Shooter() {
@@ -63,18 +63,18 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
     }
     
     public void reset() {
-    	leftEncoder.reset();
-    	rightEncoder.reset();
+    	leftPID.reset();
+    	rightPID.reset();
     }
     
-    public void setEnabled(boolean enable) {
-    	if(enable) {
-    		leftPID.enable();
-    		rightPID.enable();
-    	} else {
-    		leftPID.disable();
-    		rightPID.disable();
-    	}
+    public void enable() {
+    	leftPID.enable();
+    	rightPID.enable();
+    }
+    
+    public void disable() {
+    	leftPID.disable();
+    	rightPID.disable();
     }
     
     public boolean isLeftOnTarget() {
@@ -95,7 +95,7 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
     }
     
     public void dashboardInit() {
-        SmartDashboard.putData("Shooter Left PID", leftPID);
+        //SmartDashboard.putData("Shooter Left PID", leftPID);
     	//SmartDashboard.putData("Test Setpoint", new ShooterSetSetpoint(40000));
     	//SmartDashboard.putData("Right Shooter PID", rightPID);
     }

@@ -31,7 +31,7 @@ public class ShooterSetSetpoint extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	Robot.shooter.reset();
-    	Robot.shooter.setEnabled(true);
+    	Robot.shooter.enable();
     	Robot.shooter.setShooterSetpoints(leftSetpoint, rightSetpoint);
     }
 
@@ -41,12 +41,12 @@ public class ShooterSetSetpoint extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut();
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.shooter.setEnabled(false);
+    	Robot.shooter.disable();
     	Robot.shooter.setShooterSetpoints(0, 0);
     	Robot.shooter.setShooterOutput(0, 0);
     }

@@ -3,20 +3,24 @@ package org.usfirst.frc.team2834.robot.commands;
 import org.usfirst.frc.team2834.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class ZeroShooterAngle extends Command {
+public class AnglerTestSetpoint extends Command {
 
-    public ZeroShooterAngle() {
-    	super("Zero Shooter Angle");
-        requires(Robot.shooterAngle);
+    public AnglerTestSetpoint() {
+        super("Angler test setpoint");
+        requires(Robot.angler);
+        SmartDashboard.putNumber("Test Angler Setpoint", 0.0);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.shooterAngle.zero();
+    	Robot.angler.reset();
+    	Robot.angler.setSetpoint(SmartDashboard.getNumber("Test Angler Setpoint", 0.0));
+    	Robot.angler.enable();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -25,15 +29,18 @@ public class ZeroShooterAngle extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return true;
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.angler.disable();
+    	Robot.angler.setOutput(0.0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 }

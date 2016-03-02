@@ -7,21 +7,15 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class ShooterAngleGotoSetpoint extends Command {
+public class UseShooterView extends Command {
 	
-	double setpoint;
-
-    public ShooterAngleGotoSetpoint(double setpoint) {
-        super("Shooter Angle goto Setpoint: " + setpoint);
-        requires(Robot.shooterAngle);
-        this.setpoint = setpoint;
+    public UseShooterView() {
+    	super("Use Shooter View");
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.shooterAngle.setOutput(0.0);
-    	Robot.shooterAngle.setSetpoint(setpoint);
-    	Robot.shooterAngle.enable();
+    	Robot.vision.useGroundView();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -30,13 +24,12 @@ public class ShooterAngleGotoSetpoint extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.shooterAngle.onTarget();
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.shooterAngle.disable();
-    	Robot.shooterAngle.setOutput(0.0);
+    	Robot.vision.useShooterView();
     }
 
     // Called when another command which requires one or more of the same

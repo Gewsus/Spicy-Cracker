@@ -19,7 +19,7 @@ public class ShooterSetpointByDistance extends Command {
     	Robot.shooter.reset();
     	double set = Robot.vision.getDistance() * 310.0;
     	Robot.shooter.setShooterSetpoints(set, set);
-    	Robot.shooter.setEnabled(true);
+    	Robot.shooter.enable();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -33,7 +33,7 @@ public class ShooterSetpointByDistance extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.shooter.setEnabled(false);
+    	Robot.shooter.disable();
     	Robot.shooter.setShooterOutput(0, 0);
     }
 

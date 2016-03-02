@@ -17,20 +17,28 @@ public interface DashboardSender {
 	DashboardSender[] senders = {
 		Robot.drivetrain,
 		Robot.shooter,
-		Robot.shooterAngle,
+		Robot.angler,
 		Robot.vision,
 		Robot.oi
 	};
 	
 	static void sendPeriodicData() {
-		for(DashboardSender s : senders) {
-			s.dashboardPeriodic();
+		try {
+			for(DashboardSender s : senders) {
+				s.dashboardPeriodic();
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	static void sendInitData() {
-		for(DashboardSender s : senders) {
-			s.dashboardInit();
+		try {
+			for(DashboardSender s : senders) {
+				s.dashboardInit();
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 	}
 	

@@ -34,6 +34,8 @@ public class OI implements RobotMap, DashboardSender {
 	public final JoystickButton selectSetpoint;
 	public final JoystickButton cancelShooter;
 	public final JoystickButton autoRotate;
+	public final JoystickButton shooterView;
+	public final JoystickButton shooterIntake;
 	
 	public OI() {
 		//Initialize joysticks
@@ -50,36 +52,41 @@ public class OI implements RobotMap, DashboardSender {
 		defaultSetpoint = new JoystickButton(operator, DEFAULT_SHOOTER_SETPOINT_BUTTON);
 		autoSetpoint = new JoystickButton(operator, AUTO_SHOOTER_SETPOINT_BUTTON);
 		shooterOverride = new JoystickButton(operator, SHOOTER_OVERRIDE_BUTTON);
-		angleOverride = new JoystickButton(operator, SHOOTER_ANGLE_OVERRIDE_BUTTON);
-		selectSetpoint = new JoystickButton(operator, SELECT_SHOOTER_ANGLE_SETPOINT_BUTTON);
+		angleOverride = new JoystickButton(operator, ANGLER_OVERRIDE_BUTTON);
+		selectSetpoint = new JoystickButton(operator, SELECT_ANGLER_SETPOINT_BUTTON);
 		cancelShooter = new JoystickButton(operator, CANCEL_SHOOTER_COMMANDS);
 		autoRotate = new JoystickButton(rightDrive, ROTATE_ON_TARGET);
+		shooterView = new JoystickButton(rightDrive, SHOOTER_VIEW);
+		shooterIntake = new JoystickButton(operator, SHOOTER_INTAKE);
 		
 		//Set button functions
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
 		setDriveMotors.whenReleased(new SetDriveSixWheels(false));
 		setDriveReverse.whenPressed(new ToggleDriveReverse());
 		shoot.whenPressed(new ShooterPushToShoot());
-		defaultSetpoint.whileHeld(new ShooterSetSetpoint(44500));
+		defaultSetpoint.whileHeld(new ShooterSetSetpoint());
 		defaultSetpoint.whenReleased(new FreeShooter());
 		shooterOverride.whileHeld(new ShooterOverride());
-		angleOverride.whileHeld(new ShooterAngleOverride());
+		angleOverride.whileHeld(new AnglerOverride());
 		//selectSetpoint.whenPressed(new SelectAngleSetpoint());
 		cancelShooter.whenPressed(new FreeShooter());
-		autoRotate.whenPressed(new CenterOnGoal());
+		autoRotate.whenPressed(new AutoCenterGoal());
+		shooterView.whileHeld(new UseShooterView());
+		shooterIntake.whileHeld(new ShooterIntake());
 	}
 
 	@Override
 	public void dashboardInit() {
-		SmartDashboard.putData(new ZeroShooterAngle());
+		SmartDashboard.putData(new AnglerZero());
 		SmartDashboard.putData(new RotateToAngle(90, 0));
 		SmartDashboard.putData(new DoLowBar());
 		SmartDashboard.putData(new DriveToOW());
-		SmartDashboard.putData(new CenterOnGoal());
+		SmartDashboard.putData(new AutoCenterGoal());
 		SmartDashboard.putData(new DoCheval());
 		SmartDashboard.putData(new ShooterTestSetpoint());
 		SmartDashboard.putData(new ShooterSetpointByDistance());
-		SmartDashboard.putData("Scheduler", Scheduler.getInstance());
+		SmartDashboard.putData(new AnglerTestSetpoint());
+		SmartDashboard.putData(Scheduler.getInstance());
 	}
 
 	@Override

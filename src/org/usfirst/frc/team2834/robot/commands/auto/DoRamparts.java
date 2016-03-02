@@ -12,7 +12,7 @@ public class DoRamparts extends CommandGroup {
     public  DoRamparts() {
         super("Do Ramparts");
         addSequential(new SetDriveSixWheels(true));
-        addParallel(new TimedShooterAngle(0.1, 1.5));
+        addParallel(new TimedAngler(0.1, 1.5));
         addSequential(new TimedHaloDrive(0.75, 0.3, true, 1.5));
         addSequential(new TimedHaloDrive(-0.1, 0.0, false, 0.1));
         addSequential(new SetDriveSixWheels(false));
