@@ -27,7 +27,7 @@ public class Angler extends PIDSubsystem implements RobotMap, DashboardSender {
 	//private final double[] outputTable = {};
 	
 	public Angler() {
-		super("Angler", -0.004, -0.0000025, 0.0);
+		super("Angler", 0.004, 0.0000025, 0.0);
 		anglerMotor = new Victor(ANGLER_MOTOR);
 		anglerEncoder = new Encoder(ANGLER_ENCODER_A, ANGLER_ENCODER_B);
 		//Initialize PID values for the angle of the shooter
@@ -78,7 +78,7 @@ public class Angler extends PIDSubsystem implements RobotMap, DashboardSender {
 	}
 
 	protected void usePIDOutput(double output) {
-		anglerMotor.set(output);
+		anglerMotor.set(-output);
 	}
 
 	/*public double getTableOutput() {

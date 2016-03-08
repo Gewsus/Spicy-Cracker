@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2834.robot.subsystems;
 
+import org.usfirst.frc.team2834.robot.Robot;
 import org.usfirst.frc.team2834.robot.RobotMap;
 import org.usfirst.frc.team2834.robot.commands.HaloDrive;
 
@@ -41,7 +42,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     private AHRS gyro;
     
     public Drivetrain() {
-    	super("Drivetrain", 0.0005, 0.0001, 0.0);
+    	super("Drivetrain", 0.001, 0.0001, 0.0);
     	setInputRange(-180.0, 180.0);
     	setOutputRange(-1.0, 1.0);
     	getPIDController().setContinuous(true);
@@ -63,7 +64,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	}
     	double left = power + rotate;
     	double right = power - rotate;
-    	setOutput(left, right, false);
+    	setOutput(left, right, true);
     }
     
 	@Override
@@ -83,7 +84,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	//Scale output values for the center wheels with the output of the outer wheels
     	if(scaleCenter) {
     		left = scale(left, CENTER_SCALE);
-        	right = scale(right, CENTER_SCALE);
+    		right = scale(right, CENTER_SCALE);
     	}
     	//These motor will only activate when Drivetrain is in 6 wheel-mode
     	motors[2].set(driveMotors ? left : 0.0);
@@ -196,9 +197,10 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 		SmartDashboard.putBoolean("Gyro connected", gyro.isConnected());
 		SmartDashboard.putBoolean("Reverse", isReverse());
 		SmartDashboard.putBoolean("Drive Wheels", isDriveMotorsSix());
-		SmartDashboard.putNumber("Auto Rotate", autoRotate);
-		SmartDashboard.putBoolean("Gyro On Target", onTarget());
+		//SmartDashboard.putNumber("Auto Rotate", autoRotate);
+		//SmartDashboard.putBoolean("Gyro On Target", onTarget());
 		SmartDashboard.putNumber("Gyro Setpoint", getSetpoint());
+		SmartDashboard.putBoolean("On Goal", Math.abs(Robot.vision.getGamma()) < TOLERANCE * 180.0 / Math.PI);
 	}
 }
 

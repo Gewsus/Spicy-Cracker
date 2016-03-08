@@ -1,7 +1,6 @@
 package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.*;
-import org.usfirst.frc.team2834.robot.commands.auto.*;
 
 import com.DashboardSender;
 
@@ -28,7 +27,7 @@ public class OI implements RobotMap, DashboardSender {
 	public final JoystickButton stepUp;
 	public final JoystickButton stepDown;
 	public final JoystickButton defaultSetpoint;
-	public final JoystickButton autoSetpoint;
+	public final JoystickButton defenseSetpoint;
 	public final JoystickButton shooterOverride;
 	public final JoystickButton angleOverride;
 	public final JoystickButton selectSetpoint;
@@ -36,6 +35,7 @@ public class OI implements RobotMap, DashboardSender {
 	public final JoystickButton autoRotate;
 	public final JoystickButton shooterView;
 	public final JoystickButton shooterIntake;
+	public final JoystickButton resumeHalo;
 	
 	public OI() {
 		//Initialize joysticks
@@ -50,7 +50,7 @@ public class OI implements RobotMap, DashboardSender {
 		stepUp = new JoystickButton(operator, SHOOTER_STEP_UP_BUTTON);
 		stepDown = new JoystickButton(operator, SHOOTER_STEP_DOWN_BUTTON);
 		defaultSetpoint = new JoystickButton(operator, DEFAULT_SHOOTER_SETPOINT_BUTTON);
-		autoSetpoint = new JoystickButton(operator, AUTO_SHOOTER_SETPOINT_BUTTON);
+		defenseSetpoint = new JoystickButton(operator, DEFENSE_SETPOINT_BUTTON);
 		shooterOverride = new JoystickButton(operator, SHOOTER_OVERRIDE_BUTTON);
 		angleOverride = new JoystickButton(operator, ANGLER_OVERRIDE_BUTTON);
 		selectSetpoint = new JoystickButton(operator, SELECT_ANGLER_SETPOINT_BUTTON);
@@ -58,6 +58,7 @@ public class OI implements RobotMap, DashboardSender {
 		autoRotate = new JoystickButton(rightDrive, ROTATE_ON_TARGET);
 		shooterView = new JoystickButton(rightDrive, SHOOTER_VIEW);
 		shooterIntake = new JoystickButton(operator, SHOOTER_INTAKE);
+		resumeHalo = new JoystickButton(leftDrive, RESUME_HALO);
 		
 		//Set button functions
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
@@ -73,19 +74,22 @@ public class OI implements RobotMap, DashboardSender {
 		autoRotate.whenPressed(new AutoCenterGoal());
 		shooterView.whileHeld(new UseShooterView());
 		shooterIntake.whileHeld(new ShooterIntake());
+		resumeHalo.whenPressed(new HaloDrive());
+		defenseSetpoint.whileHeld(new ShooterSetSetpoint(47000));
 	}
 
 	@Override
 	public void dashboardInit() {
 		SmartDashboard.putData(new AnglerZero());
-		SmartDashboard.putData(new RotateToAngle(90, 0));
-		SmartDashboard.putData(new DoLowBar());
-		SmartDashboard.putData(new DriveToOW());
-		SmartDashboard.putData(new AutoCenterGoal());
-		SmartDashboard.putData(new DoCheval());
+		//SmartDashboard.putData(new RotateToAngle(90, 0));
+		//SmartDashboard.putData(new DoLowBar());
+		//SmartDashboard.putData(new DriveToOW());
+		//SmartDashboard.putData(new AutoCenterGoal());
+		//SmartDashboard.putData(new DoCheval());
 		SmartDashboard.putData(new ShooterTestSetpoint());
-		SmartDashboard.putData(new ShooterSetpointByDistance());
+		//SmartDashboard.putData(new ShooterSetpointByDistance());
 		SmartDashboard.putData(new AnglerTestSetpoint());
+		SmartDashboard.putData(new AutoDriveToTarget());
 		SmartDashboard.putData(Scheduler.getInstance());
 	}
 

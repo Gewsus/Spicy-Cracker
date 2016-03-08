@@ -13,13 +13,14 @@ public class AutoCenterGoal extends Command {
     public AutoCenterGoal() {
     	super("Auto center on goal", 5);
         requires(Robot.drivetrain);
+        requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	//double angle = Robot.vision.getGamma() * (180.0 / Math.PI);
     	//The camera is upside-down so the angle should be negative
-    	//Robot.vision.calculate();
+    	Robot.vision.calculate();
     	Robot.drivetrain.reset();
     	//Robot.drivetrain.setSetpoint(Robot.drivetrain.getYaw());
     	Robot.drivetrain.setSetpointRelative(-((Robot.vision.getGamma()) * (180.0 / Math.PI)));

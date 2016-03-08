@@ -1,50 +1,44 @@
-package org.usfirst.frc.team2834.robot.commands.auto;
+package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class RotateToAngle extends Command {
-	
-	double angle;
-	double forwardPower;
+public class AutoDriveToTarget extends Command {
 
-	public RotateToAngle(double angle) {
-		this(angle, 0.0);
-	}
+	private double power = 0.0;
 	
-    public RotateToAngle(double angle, double forwardPower) {
-    	super("Rotate to Angle: " + angle, 10);
+    public AutoDriveToTarget() {
+    	super("Auto Drive to Target");
         requires(Robot.drivetrain);
-        this.angle = angle;
-        this.forwardPower = forwardPower;
+        requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivetrain.reset();
-    	Robot.drivetrain.setZero();
-    	Robot.drivetrain.setSetpoint(angle);
-    	Robot.drivetrain.enable();
+    	Robot.vision.calculate();
+    	power = Robot.vision.getZeta();
+    	setTimeout(1);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(-forwardPower, 0.0, true);
+    	Robot.drivetrain.haloDrive(power, 0.0, false);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.drivetrain.onTarget() || isTimedOut();
+        return isTimedOut();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.drivetrain.disable();
-    	Robot.drivetrain.setSetpoint(Robot.drivetrain.getYaw());
+    	Robot.drivetrain.haloDrive(-power, 0.0, false);
+    	Timer.delay(0.1);
     	Robot.drivetrain.setZero();
     }
 

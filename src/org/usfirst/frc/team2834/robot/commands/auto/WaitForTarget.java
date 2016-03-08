@@ -11,11 +11,12 @@ public class WaitForTarget extends Command {
 
     public WaitForTarget() {
         super("Wait For Target");
+        requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	//Robot.vision.calculate();
+    	Robot.vision.calculate();
     	setTimeout(15);
     }
 
@@ -25,7 +26,9 @@ public class WaitForTarget extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut() || Robot.vision.isGoal();
+        return isTimedOut()
+        		|| Robot.vision.isGoal()
+        		;
     }
 
     // Called once after isFinished returns true

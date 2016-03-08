@@ -30,7 +30,7 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private final double P = 0.0000005;
 	private final double I = 0.0;
 	private final double D = 0.0;
-	private final double F = 0.000008;
+	private final double F = 0.000006;
 	public static final double DEFAULT_SETPOINT = 51000.0;
 	
     // Initialize your subsystem here
@@ -54,11 +54,11 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
         //Initialize PID values for the shooter
         leftPID = new PIDController(P, I, D, F, leftEncoder, leftMotor);
         leftPID.setOutputRange(0.0, 1.0);
-        leftPID.setAbsoluteTolerance(1000.0);
+        leftPID.setAbsoluteTolerance(5000.0);
         leftPID.setToleranceBuffer(5);
         rightPID = new PIDController(P, I, D, F, rightEncoder, rightMotor);
         rightPID.setOutputRange(0.0, 1.0);
-        rightPID.setAbsoluteTolerance(1000.0);
+        rightPID.setAbsoluteTolerance(5000.0);
         rightPID.setToleranceBuffer(5);
     }
     
@@ -78,10 +78,10 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
     }
     
     public boolean isLeftOnTarget() {
-    	return leftPID.onTarget();
+    	return Math.abs(leftPID.getError()) < 5000;
     }
     public boolean isRightOnTarget() {
-    	return rightPID.onTarget();
+    	return Math.abs(rightPID.getError()) < 5000;
     }
     
     public void setShooterSetpoints(double leftSetpoint, double rightSetpoint) {

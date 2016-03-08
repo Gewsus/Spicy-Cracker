@@ -13,8 +13,8 @@ public class DoRamparts extends CommandGroup {
         super("Do Ramparts");
         addSequential(new SetDriveSixWheels(true));
         addParallel(new TimedAngler(0.1, 1.5));
-        addSequential(new TimedHaloDrive(0.75, 0.3, true, 1.5));
-        addSequential(new TimedHaloDrive(-0.1, 0.0, false, 0.1));
+        addSequential(new TimedHaloDrive(0.75, -0.15, true, 0.9));
+        addSequential(new TimedHaloDrive(-0.25, 0.0, false, 0.25));
         addSequential(new SetDriveSixWheels(false));
     }
 }

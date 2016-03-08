@@ -1,7 +1,6 @@
 
 package org.usfirst.frc.team2834.robot;
 
-import org.usfirst.frc.team2834.robot.commands.FreeShooter;
 import org.usfirst.frc.team2834.robot.commands.auto.AutonomousCommand;
 import org.usfirst.frc.team2834.robot.subsystems.*;
 
@@ -22,17 +21,26 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 public class Robot extends IterativeRobot {
 
 	public static OI oi;
-    public static Drivetrain drivetrain = new Drivetrain();
-    public static Vision vision = new Vision();
-    public static Shooter shooter = new Shooter();
-    public static Angler angler = new Angler();
-    public static Pusher pusher = new Pusher();
+    public static Drivetrain drivetrain;
+    public static Vision vision;
+    public static Shooter shooter;
+    public static Angler angler;
+    public static Pusher pusher;
     
     private CommandGroup auto;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
+    
+    public Robot() {
+		drivetrain = new Drivetrain();
+		vision = new Vision();
+		shooter = new Shooter();
+		angler = new Angler();
+		pusher = new Pusher();
+    }
+    
     public void robotInit() {
     	oi = new OI();
     	DashboardSender.sendInitData();
@@ -70,7 +78,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
-    	new FreeShooter().start();
+    	//new FreeShooter().start();
         if (auto != null) auto.cancel();
     }
 

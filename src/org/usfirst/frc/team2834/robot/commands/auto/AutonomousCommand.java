@@ -3,6 +3,7 @@ package org.usfirst.frc.team2834.robot.commands.auto;
 import org.usfirst.frc.team2834.robot.Robot;
 import org.usfirst.frc.team2834.robot.commands.FreeShooter;
 import org.usfirst.frc.team2834.robot.commands.AutoCenterGoal;
+import org.usfirst.frc.team2834.robot.commands.AutoDriveToTarget;
 import org.usfirst.frc.team2834.robot.commands.ShooterPushToShoot;
 import org.usfirst.frc.team2834.robot.commands.ShooterSetSetpoint;
 
@@ -52,31 +53,36 @@ public class AutonomousCommand extends CommandGroup {
 								addSequential(new DoCheval());
 								break;
 							case 6:
+								addSequential(new DoPortculis());
 								break;
+						}
+						if(position == 1) {
+							addSequential(new RotateToAngle(0));
+							addSequential(new TimedHaloDrive(0.4, 0.0, false, 1.25));
+							addSequential(new TimedHaloDrive(-0.2, 0.0, false, 0.1));
 						}
 						if (mode >= 3) {
 							switch(position) {
 								case 0:
-									addSequential(new RotateToAngle(45, 0.25));
+									addSequential(new RotateToAngle(45));
 									break;
 								case 1:
-									addSequential(new RotateToAngle(30, 0.25));
+									addSequential(new RotateToAngle(30));
 									break;
 								case 2:
-									addSequential(new RotateToAngle(15, 0.25));
+									addSequential(new RotateToAngle(15));
 									break;
 								case 3:
-									addSequential(new RotateToAngle(-10, 0.25));
+									addSequential(new RotateToAngle(-10));
 									break;
 								case 4:
-									addSequential(new RotateToAngle(-15, 0.25));
+									addSequential(new RotateToAngle(-15));
 									break;
 							}
-							addSequential(new WaitCommand(1.5));
 							addSequential(new WaitForTarget());
 							addSequential(new AutoCenterGoal());
 							addSequential(new SetDriveReverse(true));
-							switch(position) {
+							/*switch(position) {
 							case 0:
 							case 1:
 								addSequential(new TimedHaloDrive(0.5, 0, true, 0.6));
@@ -90,12 +96,11 @@ public class AutonomousCommand extends CommandGroup {
 							default:
 								addSequential(new TimedHaloDrive(0.5, 0, true, 0.3));
 								break;
-							}
+							}*/
+							addSequential(new AutoDriveToTarget());
 							addSequential(new TimedHaloDrive(-0.1, 0, true, 0.1));
-							addSequential(new WaitCommand(1.5));
-							//addSequential(new AutoCenterGoal());
-							//addSequential(new WaitCommand(1.5));
 							addSequential(new AutoCenterGoal());
+							//addSequential(new AutoCenterGoal());
 							addParallel(new ShooterSetSetpoint());
 							addSequential(new WaitAndShoot());
 							addSequential(new FreeShooter());
@@ -105,8 +110,8 @@ public class AutonomousCommand extends CommandGroup {
 			} else {
 				Robot.drivetrain.startingAngle = 90;
 				if(mode >= 3) {
-					addSequential(new ShooterSetSetpoint());
-					addSequential(new WaitCommand(1));
+					addParallel(new ShooterSetSetpoint(50000, 20000));
+					addSequential(new WaitCommand(5));
 					addSequential(new ShooterPushToShoot());
 					addSequential(new FreeShooter());
 				}
@@ -116,7 +121,7 @@ public class AutonomousCommand extends CommandGroup {
     
     private class WaitAndShoot extends CommandGroup {
     	public WaitAndShoot() {
-    		addSequential(new WaitCommand(3));
+    		addSequential(new WaitCommand(2));
 			addSequential(new ShooterPushToShoot());
     	}
     }

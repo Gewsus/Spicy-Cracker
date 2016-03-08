@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Vision extends Subsystem implements Runnable, DashboardSender {
 	
 	private boolean shooterView = true; //Which camera (Shooter or ground) should be sent to the dashboard
-	private boolean processImage = true; //Processing the image takes a lot of processing power and a lot of time, sometimes it may be best to leave it off
+	private boolean processImage = false; //Processing the image takes a lot of processing power and a lot of time, sometimes it may be best to leave it off
 	private boolean isGoal = false; //Is there a particle that meets the criteria
 	private double distance = 0.0; //EXPERIMENTAL: Gives the distance to a possible target
 	private double alpha = 0.0; //EXPERIMENTAL: Vertical angle to the target
@@ -28,29 +28,28 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	private double gamma = 0.0;
 	private double delta = 0.0;
 	private double zeta = 0.0;
-	private final int FRAME_HEIGHT;
+	//private int FRAME_HEIGHT;
 	private int FRAME_WIDTH;
-	//private final double TARGET_WIDTH = 20.0;
+	private final double TARGET_WIDTH = 20.0;
 	private final double TARGET_HEIGHT = 12.0;
+	private final int VERTICAL_CROSHAIR = 250;
 	private final double TARGET_VERTICAL_DISTANCE = 82.0;
-	//private final double DIST_TO_ROTATION_CENTER = 10;
+	private final double DIST_TO_ROTATION_CENTER = 10;
 	private double FOCAL_LENGTH = 606.0; //Coefficient for the relation between a camera image and actual dimensions
+	private double FOV = 0.65;
 	private final int SAMPLES_TO_AVERAGE = 1;
 	private final String SHOOTER_CAMERA = "cam1";
 	private final String GROUND_CAMERA = "cam0";
 	
 	//Image fields
-	//private USBCamera ground;
-	//private AxisCamera shooter;
 	private Image frame;		//Frame that will hold the raw image from camera
 	private Image binaryFrame;	//Frame depicting possible targets
 	private int shooterSession;		//Session id for the processing camera
-	//private int groundSession; //Session for the ground/view camera
 	
 	//NIVision fields
 	private NIVision.ParticleFilterCriteria2 criteria[];
 	private NIVision.ParticleFilterOptions2 options;
-	private NIVision.ParticleReport reports[];
+	private HawkReport reports[];
 	
 	//HSV Ranges
 	private NIVision.Range HRange, SRange, LRange;
@@ -61,13 +60,12 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		//Setup camera and images
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_HSL, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
-		FRAME_HEIGHT = NIVision.imaqGetImageSize(binaryFrame).height;
 		
 		//Set HSV bounds to that of the retro-reflective tape
 		//The color threshold will filter out pixels outside of these ranges
-    	HRange = new NIVision.Range(80, 255);
+    	HRange = new NIVision.Range(80, 150);
     	SRange = new NIVision.Range(230, 255);
-    	LRange = new NIVision.Range(60, 255);
+    	LRange = new NIVision.Range(60, 120);
 		
 		//Set criteria to determine which particles to filter out
     	options = new NIVision.ParticleFilterOptions2(0, 0, 1, 1);
@@ -80,7 +78,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	criteria[1] = new NIVision.ParticleFilterCriteria2();
     	criteria[1].parameter = NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM;
     	criteria[1].lower = 0;
-    	criteria[1].upper = 360;
+    	criteria[1].upper = 400;
     	//Run camera feed in separate thread so Scheduler does not interfere.
 		new Thread(this, "Vision Processing Thread").start();
 	}
@@ -90,6 +88,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		//Continuously grab images, possible process, and feed them to the dashboard.
 		//Create another thread to process the image so that the camera feed is not interrupted by the
 		//vision processing
+		calculate();
 		while(true) {
 			if (processImage) {
 				try {
@@ -106,20 +105,15 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		//Identify camera session and begin receiving video.
 		//FRC crashes the program if the camera does not exist and you try to run this code
 		//so i made it easy to just disable the camera if it is disconnected.
+		CameraServer.getInstance().startAutomaticCapture(GROUND_CAMERA);
 		try {
 			shooterSession = NIVision.IMAQdxOpenCamera(SHOOTER_CAMERA, NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(shooterSession);
-			/*groundSession = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-			NIVision.IMAQdxConfigureGrab(groundSession);*/
-			//ground = new USBCamera("cam1");
-			//shooter = new AxisCamera("10.28.34.89");
-			//NIVision.IMAQdxStartAcquisition(groundSession);
-			CameraServer.getInstance().startAutomaticCapture(GROUND_CAMERA);
 			NIVision.IMAQdxStartAcquisition(shooterSession);
 		} catch (VisionException e) {
-			System.out.println("====Problem Starting Camera, trying agin in 5s====");
+			System.out.println("===Problem Starting Camera, trying agin in 1s===");
 			e.printStackTrace();
-			Timer.delay(5);
+			Timer.delay(1);
 			initializeCamera();
 		}
 	}
@@ -127,12 +121,13 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     public void calculate() {
     	double[] alphas = new double[SAMPLES_TO_AVERAGE];
     	boolean isGoal = false;
-    	NIVision.ParticleReport best = new NIVision.ParticleReport();
+    	HawkReport best = new HawkReport();
     	for (int i = 0; i < SAMPLES_TO_AVERAGE; i++) {
+    		//FRAME_HEIGHT = NIVision.imaqGetImageSize(binaryFrame).height;
+    		FRAME_WIDTH = NIVision.imaqGetImageSize(binaryFrame).width;
     		NIVision.IMAQdxGrab(shooterSession, frame, 1);
 			//Filter out pixels and particles that do not meet the criteria
 			NIVision.imaqColorThreshold(binaryFrame, frame, 1, ColorMode.HSL, HRange, SRange, LRange);
-			FRAME_WIDTH = NIVision.imaqGetImageSize(binaryFrame).width;
 			//Complete any partial shapes
 			NIVision.imaqConvexHull(binaryFrame, binaryFrame, 1);
 			NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, options, null);
@@ -140,48 +135,48 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 			int particles = NIVision.imaqCountParticles(binaryFrame, 1);
 			//Use the first sample to determine if there is a goal in view
 			if (particles > 0) {
+				int bestID = 0;
 				isGoal = true;
-				reports = new NIVision.ParticleReport[particles];
-				best = new NIVision.ParticleReport();
+				reports = new HawkReport[particles];
 				best.area = Integer.MIN_VALUE;
 				//Add measurements of each particle to a report
 				for (int p = 0; p < particles; p++) {
-					reports[p] = new NIVision.ParticleReport();
-					reports[p].area = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0,
-							NIVision.MeasurementType.MT_AREA);
-					reports[p].boundingBox.left = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0,
-							NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
-					reports[p].boundingBox.width = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0,
-							NIVision.MeasurementType.MT_BOUNDING_RECT_WIDTH);
-					reports[p].boundingBox.top = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0,
-							NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
-					reports[p].projectionX = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0,
-							NIVision.MeasurementType.MT_AVERAGE_HORIZ_SEGMENT_LENGTH);
-					reports[p].projectionY = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0,
-							NIVision.MeasurementType.MT_AVERAGE_VERT_SEGMENT_LENGTH);
+					reports[p] = new HawkReport();
+					reports[p].area = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0, NIVision.MeasurementType.MT_AREA);
 					//Find the best particle by area
 					if (reports[p].area > best.area) {
 						best = reports[p];
+						bestID = p;
 					}
 				}
-				alphas[i] = Math.asin((2.0 * TARGET_VERTICAL_DISTANCE * best.projectionY) / (FOCAL_LENGTH * TARGET_HEIGHT)) / 2.0;
+				best.boundingBox.left = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
+				best.boundingBox.width = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_WIDTH);
+				best.boundingBox.top = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
+				best.estimatedWidth = NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_EQUIVALENT_RECT_LONG_SIDE);
+				best.estimatedHeight = NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_EQUIVALENT_RECT_SHORT_SIDE);
+				alphas[i] = Math.asin((2.0 * TARGET_VERTICAL_DISTANCE * best.estimatedHeight) / (FOCAL_LENGTH * TARGET_HEIGHT)) / 2.0;
 			} 
 		}
     	this.isGoal = isGoal;
     	if (isGoal) {
     		Arrays.sort(alphas);
     		alpha = alphas[SAMPLES_TO_AVERAGE / 2];
-    		//double h = best.projectionY;
-        	//double w = best.projectionX;
-    		FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 606);
-    		//alpha = Math.asin((2 * TARGET_VERTICAL_DISTANCE * h) / (FOCAL_LENGTH * TARGET_HEIGHT)) / 2.0;
+    		double h = best.estimatedHeight;
+        	double w = best.estimatedWidth;
+    		//FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 606);
+    		//FOV = SmartDashboard.getNumber("VFOV", 0.65);
     		distance = TARGET_VERTICAL_DISTANCE / Math.tan(alpha);
-    		//beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
-    		gamma = 2.0 * Math.atan(((best.boundingBox.left + (best.boundingBox.width / 2.0)) - (FRAME_WIDTH / 2.0)) / FOCAL_LENGTH);
-    		/*delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) /
-    				Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));*/
-    		zeta = Math.atan((FRAME_HEIGHT / 2.0) - best.boundingBox.top);
+    		//distance = TARGET_HEIGHT * FRAME_HEIGHT / (2 * h * FOV);
+    		beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
+    		gamma = 2.0 * Math.atan(((best.boundingBox.left + (best.boundingBox.width / 2.0)) - (FRAME_WIDTH / 2.0)) / (FOCAL_LENGTH + 30.0));
+    		delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) / Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));
+    		zeta = (best.boundingBox.top + h - VERTICAL_CROSHAIR) / 135.0;
 		}
+    }
+    
+    private class HawkReport extends NIVision.ParticleReport {
+    	public double estimatedWidth;
+    	public double estimatedHeight;
     }
     
     public void useShooterView() {
@@ -193,6 +188,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     }
     
     public void initDefaultCommand() {
+    	//setDefaultCommand(new ProcessImage());
     }
 	
 	public double getAlpha() {
@@ -238,21 +234,19 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	@Override
 	public void dashboardInit() {
 		SmartDashboard.putNumber("Focal Length", FOCAL_LENGTH);
+		SmartDashboard.putNumber("VFOV", FOV);
 	}
 
 	@Override
 	public void dashboardPeriodic() {
 		SmartDashboard.putBoolean("Is Goal", isGoal);
 		SmartDashboard.putNumber("Estimated Distance", getDistance());
-    	SmartDashboard.putNumber("Alpha", getAlpha());
-    	SmartDashboard.putNumber("Beta", getBeta());
-    	SmartDashboard.putNumber("Gamma", getGamma());
-    	SmartDashboard.putNumber("Delta", getDelta());
-    	SmartDashboard.putBoolean("Camera", shooterView);
-    	if (isGoal) {
-			//SmartDashboard.putNumber("Height", best.projectionY);
-			//SmartDashboard.putNumber("Width", best.projectionX);
-		}
+		SmartDashboard.putNumber("Alpha", getAlpha());
+		SmartDashboard.putNumber("Beta", getBeta());
+		SmartDashboard.putNumber("Gamma", getGamma());
+		SmartDashboard.putNumber("Delta", getDelta());
+		SmartDashboard.putNumber("Zeta", getZeta());
+		SmartDashboard.putBoolean("Camera", shooterView);
 	}
 }
 
