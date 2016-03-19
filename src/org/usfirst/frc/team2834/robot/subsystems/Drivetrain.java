@@ -23,8 +23,8 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	private double autoRotate = 0.0;
 	private final double CENTER_SCALE = 0.4; //Apply an exponential scale function to the input
 	private final double TOLERANCE = 2; //Value on either side of setpoint to register on target
-	private final double FEED_FORWARD = 0.6; //Value required for the drivetrain to actually move.  Thanks build team.
-    
+	private final double FEED_FORWARD = 0.7; //Value required for the drivetrain to actually move.  Thanks build team.
+
 	/*
      * Order goes:
      * 0	3
@@ -137,16 +137,20 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	return coerceToYawRange(gyro.getYaw() + startingAngle);
     }
     
+    public double getPitch() {
+    	return gyro.getPitch();
+    }
+    
 	public void initDefaultCommand() {
         setDefaultCommand(new HaloDrive());
     }
 
 	public boolean isUpSlope() {
-		return gyro.getPitch() > 5;
+		return getPitch() > 5;
 	}
 	
 	public boolean isDownSlope() {
-		return gyro.getPitch() < -5;
+		return getPitch() < -5;
 	}
 	
 	private double coerceToYawRange(double yaw) {
@@ -170,12 +174,13 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 		} else {
 			//The robot this year does not rotate unless a considerable amount of power is applied
 			//This code adds a constant feed forward to the PID output to ensure the robot does this.
-			if (output < 0.0) {
+			/*if (output < 0.0) {
 				output -= FEED_FORWARD;
 			} else if (output > 0.0) {
 				output += FEED_FORWARD;
 			}
-			autoRotate = output;
+			autoRotate = output;*/
+			autoRotate = scale(output, 0.1);
 		}
 	}
 
@@ -193,14 +198,14 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	@Override
 	public void dashboardPeriodic() {
 		SmartDashboard.putNumber("Gyro Yaw", getYaw());
-		SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
+		SmartDashboard.putNumber("Gyro Pitch", getPitch());
 		SmartDashboard.putBoolean("Gyro connected", gyro.isConnected());
 		SmartDashboard.putBoolean("Reverse", isReverse());
 		SmartDashboard.putBoolean("Drive Wheels", isDriveMotorsSix());
 		//SmartDashboard.putNumber("Auto Rotate", autoRotate);
 		//SmartDashboard.putBoolean("Gyro On Target", onTarget());
 		SmartDashboard.putNumber("Gyro Setpoint", getSetpoint());
-		SmartDashboard.putBoolean("On Goal", Math.abs(Robot.vision.getGamma()) < TOLERANCE * 180.0 / Math.PI);
+		//SmartDashboard.putBoolean("On Goal", Math.abs(Robot.vision.getGamma()) < TOLERANCE * Math.PI / 180.0);
 	}
 }
 

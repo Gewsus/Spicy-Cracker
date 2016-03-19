@@ -15,11 +15,11 @@ public class DoMoat extends CommandGroup {
         addSequential(new SetDriveSixWheels(true));
         //addParallel(new TimedAngler(0.2, 3));
         addSequential(new TimedHaloDrive(0.6, 0.0, false, 0.25));
-        addSequential(new WaitCommand(1));
-        addSequential(new TimedHaloDrive(1, 0.0, false, 0.6));
         addSequential(new WaitCommand(0.5));
-        addSequential(new TimedHaloDrive(0.6, 0.0, true, 0.6));
-        //addSequential(new TimedHaloDrive(-0.25, 0.0, false, 0.75));
+        addSequential(new TimedHaloDrive( 0.85, 0.0, false, 1.25));
+        //addSequential(new WaitCommand(0.5));
+        //addSequential(new TimedHaloDrive(0.6, 0.0, true, 0.6));
+        addSequential(new TimedHaloDrive(-0.25, 0.0, false, 0.25));
         addSequential(new SetDriveSixWheels(false));
     }
 }

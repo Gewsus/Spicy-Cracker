@@ -47,6 +47,6 @@ public interface RobotMap {
 	int ANGLER_MOTOR = 8;
 	//int LEFT_ANGLER_MOTOR = 10;
 	//int ANGLER_ENCODER = 0;
-	int ANGLER_ENCODER_A = 4;
+	int ANGLER_ENCODER_A = 6;
 	int ANGLER_ENCODER_B = 5;
 }

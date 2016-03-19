@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2834.robot.subsystems;
 
 import org.usfirst.frc.team2834.robot.RobotMap;
+import org.usfirst.frc.team2834.robot.commands.PusherOut;
 
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -15,12 +16,14 @@ public class Pusher extends Subsystem implements RobotMap {
     
     Servo pusher;
 	//Victor pusher;
+    public static final double PUSHED = 0.25;
+    public static final double IN = 1.0;
 
     public Pusher() {
     	super("Pusher");
     	pusher = new Servo(SHOOTER_PUSH_ACTUATOR);
     	//pusher = new Victor(SHOOTER_PUSH_ACTUATOR);
-    	setPusherPosition(1.0);
+    	setPusherPosition(IN);
     }
     
     public void setPusherPosition(double pos) {
@@ -32,7 +35,7 @@ public class Pusher extends Subsystem implements RobotMap {
     }*/
     
     public void initDefaultCommand() {
-        //No need for a default command
+        setDefaultCommand(new PusherOut(false));
     }
 }
 

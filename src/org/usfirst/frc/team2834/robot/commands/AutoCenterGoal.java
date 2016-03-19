@@ -2,6 +2,7 @@ package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -9,18 +10,25 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class AutoCenterGoal extends Command {
 	
-	//private double start;
-    public AutoCenterGoal() {
+	//private double offset;
+
+	public AutoCenterGoal() {
+    	this(0.0);
+    }
+	
+    public AutoCenterGoal(double offset) {
     	super("Auto center on goal", 5);
         requires(Robot.drivetrain);
         requires(Robot.vision);
+        //this.offset = offset;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	//double angle = Robot.vision.getGamma() * (180.0 / Math.PI);
     	//The camera is upside-down so the angle should be negative
-    	Robot.vision.calculate();
+    	//Robot.vision.calculate();
+    	Timer.delay(0.5);
     	Robot.drivetrain.reset();
     	//Robot.drivetrain.setSetpoint(Robot.drivetrain.getYaw());
     	Robot.drivetrain.setSetpointRelative(-((Robot.vision.getGamma()) * (180.0 / Math.PI)));

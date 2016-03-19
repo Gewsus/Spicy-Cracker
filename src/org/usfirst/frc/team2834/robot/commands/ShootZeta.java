@@ -1,25 +1,26 @@
-package org.usfirst.frc.team2834.robot.commands.auto;
+package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
+import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class WaitForTarget extends Command {
+public class ShootZeta extends Command {
 
-    public WaitForTarget() {
-        super("Wait For Target");
+    public ShootZeta() {
+        super("Shoot Zeta");
+        requires(Robot.shooter);
         requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Timer.delay(1);
-    	//Robot.vision.calculate();
-    	setTimeout(15);
+    	double s = Shooter.DEFAULT_SETPOINT + (Robot.vision.getZeta() * 6300);
+    	Robot.shooter.setShooterSetpoints(s, s);
+    	Robot.shooter.enable();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -28,17 +29,19 @@ public class WaitForTarget extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut()
-        		|| Robot.vision.isGoal()
-        		;
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.shooter.disable();
+    	Robot.shooter.setShooterOutput(0, 0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
+    	
     }
 }

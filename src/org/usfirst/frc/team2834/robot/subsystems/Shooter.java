@@ -29,9 +29,10 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private Encoder rightEncoder;
 	private final double P = 0.0000005;
 	private final double I = 0.0;
-	private final double D = 0.0;
-	private final double F = 0.000006;
+	private final double D = -0.00000025;
+	private final double F = 0.000003;
 	public static final double DEFAULT_SETPOINT = 51000.0;
+	private final double TOLERANCE = 3000;
 	
     // Initialize your subsystem here
     public Shooter() {
@@ -78,10 +79,10 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
     }
     
     public boolean isLeftOnTarget() {
-    	return Math.abs(leftPID.getError()) < 5000;
+    	return Math.abs(leftPID.getError()) < TOLERANCE;
     }
     public boolean isRightOnTarget() {
-    	return Math.abs(rightPID.getError()) < 5000;
+    	return Math.abs(rightPID.getError()) < TOLERANCE;
     }
     
     public void setShooterSetpoints(double leftSetpoint, double rightSetpoint) {

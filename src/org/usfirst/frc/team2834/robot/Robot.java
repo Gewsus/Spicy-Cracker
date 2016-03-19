@@ -63,6 +63,7 @@ public class Robot extends IterativeRobot {
 	 * This function is called once before autonomous period starts
 	 */
     public void autonomousInit() {
+    	Robot.vision.useShooterView();
     	Robot.drivetrain.rezero();
     	Robot.angler.zero();
     	auto = new AutonomousCommand();
@@ -78,8 +79,10 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
+    	Robot.vision.useShooterView();
     	//new FreeShooter().start();
         if (auto != null) auto.cancel();
+        pusher.setPusherPosition(Pusher.IN);
     }
 
     /**

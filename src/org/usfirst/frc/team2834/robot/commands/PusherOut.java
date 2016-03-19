@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
+import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -14,7 +15,7 @@ public class PusherOut extends Command {
     public PusherOut(boolean out) {
     	super("Pusher Out: " + out);
         requires(Robot.pusher);
-        output = out ? 0.0 : 1.0;
+        output = out ? Pusher.PUSHED : Pusher.IN;
     }
 
     // Called just before this Command runs the first time

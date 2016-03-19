@@ -32,7 +32,7 @@ public class Angler extends PIDSubsystem implements RobotMap, DashboardSender {
 		anglerEncoder = new Encoder(ANGLER_ENCODER_A, ANGLER_ENCODER_B);
 		//Initialize PID values for the angle of the shooter
         setOutputRange(-0.5, 0.5);
-        getPIDController().setAbsoluteTolerance(5);
+        getPIDController().setAbsoluteTolerance(1);
 	}
 	
     public void initDefaultCommand() {
@@ -95,7 +95,7 @@ public class Angler extends PIDSubsystem implements RobotMap, DashboardSender {
 	
 	@Override
 	public void dashboardInit() {
-		//SmartDashboard.putData("Angle PID", getPIDController());
+		SmartDashboard.putData("Angle PID", getPIDController());
 		//SmartDashboard.putNumber("Angle proportion", POWER_PROPORTION);
 	}
 
