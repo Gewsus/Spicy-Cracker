@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
+import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -29,7 +30,7 @@ public class ShooterSetpointAndShoot extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	if(Robot.shooter.isLeftOnTarget() && Robot.shooter.isRightOnTarget()); {
-    		Robot.pusher.setPusherPosition(1.0);
+    		Robot.pusher.setPusherPosition(Pusher.IN);
     		Timer.delay(1.5);
     		finish = true;
     	}
@@ -44,7 +45,7 @@ public class ShooterSetpointAndShoot extends Command {
     protected void end() {
     	Robot.shooter.disable();
     	Robot.shooter.setShooterOutput(0, 0);
-    	Robot.pusher.setPusherPosition(0.0);
+    	Robot.pusher.setPusherPosition(Pusher.OUT);
     }
 
     // Called when another command which requires one or more of the same

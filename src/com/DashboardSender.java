@@ -19,6 +19,7 @@ public interface DashboardSender {
 		Robot.shooter,
 		Robot.angler,
 		Robot.vision,
+		Robot.pusher,
 		Robot.oi
 	};
 	

@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.commands.FreeShooter;
 import org.usfirst.frc.team2834.robot.commands.ShootZeta;
 import org.usfirst.frc.team2834.robot.commands.AutoCenterGoal;
 import org.usfirst.frc.team2834.robot.commands.AutoDriveToTarget;
-import org.usfirst.frc.team2834.robot.commands.ShooterPushToShoot;
+import org.usfirst.frc.team2834.robot.commands.PushToShoot;
 import org.usfirst.frc.team2834.robot.commands.ShooterSetSetpoint;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -91,10 +91,14 @@ public class AutonomousCommand extends CommandGroup {
 							addSequential(new SetDriveReverse(true));
 							addSequential(new WaitForTarget());
 							addSequential(new AutoCenterGoal());
+							if(position == 4) {
+								addSequential(new AutoDriveToTarget());
+							}
+							addParallel(new ShootZeta());
+							addSequential(new WaitCommand(1));
 							//addSequential(new AutoDriveToTarget());
 							//addSequential(new AutoDriveToTarget());
 							addSequential(new AutoCenterGoal());
-							addParallel(new ShootZeta());
 							addSequential(new WaitAndShoot());
 							addSequential(new FreeShooter());
 						} else {
@@ -107,7 +111,7 @@ public class AutonomousCommand extends CommandGroup {
 				if(mode >= 3) {
 					addParallel(new ShooterSetSetpoint());
 					addSequential(new WaitCommand(5));
-					addSequential(new ShooterPushToShoot());
+					addSequential(new PushToShoot());
 					addSequential(new FreeShooter());
 				}
 			} 
@@ -117,8 +121,8 @@ public class AutonomousCommand extends CommandGroup {
     private class WaitAndShoot extends CommandGroup {
     	public WaitAndShoot() {
     		addSequential(new WaitCommand(3));
-			addSequential(new ShooterPushToShoot());
-			addSequential(new ShooterPushToShoot());
+			addSequential(new PushToShoot());
+			addSequential(new PushToShoot());
     	}
     }
 }

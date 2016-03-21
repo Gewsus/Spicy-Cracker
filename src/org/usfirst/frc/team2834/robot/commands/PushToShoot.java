@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 /**
  *
  */
-public class ShooterPushToShoot extends CommandGroup {
+public class PushToShoot extends CommandGroup {
     
-    public  ShooterPushToShoot() {
+    public  PushToShoot() {
         addSequential(new PusherOut(true));
-        addSequential(new WaitCommand(2.25));
+        addSequential(new WaitCommand(1.0));
         addSequential(new PusherOut(false));
     }
 }

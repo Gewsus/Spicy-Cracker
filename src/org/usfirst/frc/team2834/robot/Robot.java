@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team2834.robot;
 
+import org.usfirst.frc.team2834.robot.commands.PusherOff;
 import org.usfirst.frc.team2834.robot.commands.auto.AutonomousCommand;
 import org.usfirst.frc.team2834.robot.subsystems.*;
 
@@ -82,7 +83,7 @@ public class Robot extends IterativeRobot {
     	Robot.vision.useShooterView();
     	//new FreeShooter().start();
         if (auto != null) auto.cancel();
-        pusher.setPusherPosition(Pusher.IN);
+        new PusherOff().start();
     }
 
     /**

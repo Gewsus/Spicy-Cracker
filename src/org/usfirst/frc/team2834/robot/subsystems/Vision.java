@@ -180,7 +180,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     		distance = TARGET_VERTICAL_DISTANCE / Math.tan(alpha);
     		//distance = TARGET_HEIGHT * FRAME_HEIGHT / (2 * h * FOV);
     		beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
-    		gamma = 2.0 * Math.atan(((best.boundingBox.left + (best.boundingBox.width / 2.0) - offset) - (FRAME_WIDTH / 2.0)) / 700.0);
+    		gamma = 2.0 * Math.atan(((best.boundingBox.left + (0.5 * best.boundingBox.width / 2.0) - offset) - (FRAME_WIDTH / 2.0)) / 700.0);
     		delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) / Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));
     		zeta = (best.boundingBox.top + h - VERTICAL_CROSHAIR) / 130.0;
     		//NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, best.boundingBox, NIVision.DrawMode.DRAW_VALUE, NIVision.ShapeMode.SHAPE_RECT, 0.0f);

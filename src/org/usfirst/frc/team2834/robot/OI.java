@@ -64,7 +64,7 @@ public class OI implements RobotMap, DashboardSender {
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
 		setDriveMotors.whenReleased(new SetDriveSixWheels(false));
 		setDriveReverse.whenPressed(new ToggleDriveReverse());
-		shoot.whenPressed(new ShooterPushToShoot());
+		shoot.whenPressed(new PushToShoot());
 		defaultSetpoint.whileHeld(new ShooterSetSetpoint());
 		defaultSetpoint.whenReleased(new FreeShooter());
 		shooterOverride.whileHeld(new ShooterOverride());
@@ -76,12 +76,14 @@ public class OI implements RobotMap, DashboardSender {
 		shooterIntake.whileHeld(new ShooterIntake());
 		resumeHalo.whenPressed(new HaloDrive());
 		defenseSetpoint.whileHeld(new ShooterSetSetpoint(47000));
+		stepDown.whileHeld(new ShootZeta());
 	}
 
 	@Override
 	public void dashboardInit() {
 		SmartDashboard.putData(new AnglerZero());
 		SmartDashboard.putData(new ShootZeta());
+		SmartDashboard.putData(new PushToShoot());
 		//SmartDashboard.putData(new RotateToAngle(90, 0));
 		//SmartDashboard.putData(new DoLowBar());
 		//SmartDashboard.putData(new DriveToOW());

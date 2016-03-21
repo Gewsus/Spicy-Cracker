@@ -29,7 +29,7 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private Encoder rightEncoder;
 	private final double P = 0.0000005;
 	private final double I = 0.0;
-	private final double D = -0.00000025;
+	private final double D = -0.0000005;
 	private final double F = 0.000003;
 	public static final double DEFAULT_SETPOINT = 51000.0;
 	private final double TOLERANCE = 3000;

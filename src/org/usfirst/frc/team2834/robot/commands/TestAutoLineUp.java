@@ -44,8 +44,8 @@ public class TestAutoLineUp extends CommandGroup {
     private class WaitAndShoot extends CommandGroup {
     	public WaitAndShoot() {
     		addSequential(new WaitCommand(2));
-			addSequential(new ShooterPushToShoot());
-			addSequential(new ShooterPushToShoot());
+			addSequential(new PushToShoot());
+			addSequential(new PushToShoot());
     	}
     }
 }

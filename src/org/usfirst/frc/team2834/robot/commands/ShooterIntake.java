@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
+import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -12,10 +13,12 @@ public class ShooterIntake extends Command {
     public ShooterIntake() {
         super("Shooter Intake");
         requires(Robot.shooter);
+        requires(Robot.pusher);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.pusher.setPusherPosition(Pusher.IN);
     }
 
     // Called repeatedly when this Command is scheduled to run

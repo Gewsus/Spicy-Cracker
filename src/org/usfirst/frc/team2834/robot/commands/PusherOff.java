@@ -1,27 +1,23 @@
 package org.usfirst.frc.team2834.robot.commands;
 
 import org.usfirst.frc.team2834.robot.Robot;
-import org.usfirst.frc.team2834.robot.subsystems.Shooter;
+import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class ShootZeta extends Command {
+public class PusherOff extends Command {
 
-    public ShootZeta() {
-        super("Shoot Zeta");
-        requires(Robot.shooter);
-        requires(Robot.vision);
+    public PusherOff() {
+        super("Pusher Off");
+        requires(Robot.pusher);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	double s = Shooter.DEFAULT_SETPOINT + (Robot.vision.getZeta() * 6300);
-    	Robot.shooter.reset();
-    	Robot.shooter.enable();
-    	Robot.shooter.setShooterSetpoints(s, s);
+    	Robot.pusher.setPusherPosition(Pusher.IN);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -35,14 +31,10 @@ public class ShootZeta extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.shooter.disable();
-    	Robot.shooter.setShooterOutput(0, 0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	end();
-    	
     }
 }
