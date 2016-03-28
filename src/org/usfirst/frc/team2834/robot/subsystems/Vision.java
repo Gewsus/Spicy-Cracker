@@ -23,24 +23,25 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	private boolean shooterView; //Which camera (Shooter or ground) should be sent to the dashboard
 	private boolean processImage = true; //Processing the image takes a lot of processing power and a lot of time, sometimes it may be best to leave it off
 	private boolean isGoal = false; //Is there a particle that meets the criteria
-	private double distance = 0.0; //EXPERIMENTAL: Gives the distance to a possible target
-	private double alpha = 0.0; //EXPERIMENTAL: Vertical angle to the target
-	private double beta = 0.0;  //EXPERIMENTAL: Horizontal angle to the target
-	private double gamma = 0.0;
-	private double delta = 0.0;
-	private double zeta = 0.0;
+	private volatile double distance = 0.0; //EXPERIMENTAL: Gives the distance to a possible target
+	private volatile double alpha = 0.0; //EXPERIMENTAL: Vertical angle to the target
+	private volatile double beta = 0.0;  //EXPERIMENTAL: Horizontal angle to the target
+	private volatile double gamma = 0.0;
+	private volatile double delta = 0.0;
+	private volatile double zeta = 0.0;
 	//private int FRAME_HEIGHT;
 	private int FRAME_WIDTH;
-	private final double TARGET_WIDTH = 20.0;
+	//private final double TARGET_WIDTH = 20.0;
 	private final double TARGET_HEIGHT = 12.0;
 	private final int VERTICAL_CROSHAIR = 250;
 	private final double TARGET_VERTICAL_DISTANCE = 82.0;
-	private final double DIST_TO_ROTATION_CENTER = 10;
-	private double FOCAL_LENGTH = 606.0; //Coefficient for the relation between a camera image and actual dimensions
-	private double FOV = 0.65;
+	//private final double DIST_TO_ROTATION_CENTER = 10;
+	//570 Practice
+	private double FOCAL_LENGTH = 570.0; //Coefficient for the relation between a camera image and actual dimensions
+	private double FOV = 0.65; 
 	private final int SAMPLES_TO_AVERAGE = 1;
-	private final String SHOOTER_CAMERA = "cam1";
-	private final String GROUND_CAMERA = "cam0";
+	private final String SHOOTER_CAMERA = "cam0";
+	private final String GROUND_CAMERA = "cam1";
 	
 	//Image fields
 	private Image frame;		//Frame that will hold the raw image from camera
@@ -125,11 +126,11 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	}
 	
 	public void calculate() {
-		calculate(0.0);
+		calculate(0.75);
 	}
 	
     public void calculate(double offset) {
-    	HawkReport[] bestReports = new HawkReport[SAMPLES_TO_AVERAGE];
+    	HawkReport[] samples = new HawkReport[SAMPLES_TO_AVERAGE];
     	boolean isGoal = false;
     	for (int i = 0; i < SAMPLES_TO_AVERAGE; i++) {
     		NIVision.IMAQdxGrab(shooterSession, frame, 1);
@@ -143,45 +144,45 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 			//Generate report for area and sort
 			int particles = NIVision.imaqCountParticles(binaryFrame, 1);
 			//Use the first sample to determine if there is a goal in view
-			bestReports[i] = new HawkReport();
+			samples[i] = new HawkReport();
 			if (particles > 0) {
 				int bestID = 0;
 				isGoal = true;
 				HawkReport[] reports = new HawkReport[particles];
-				bestReports[i].area = Integer.MIN_VALUE;
+				samples[i].area = Integer.MIN_VALUE;
 				//Add measurements of each particle to a report
 				for (int p = 0; p < particles; p++) {
 					reports[p] = new HawkReport();
 					reports[p].area = (int) NIVision.imaqMeasureParticle(binaryFrame, p, 0, NIVision.MeasurementType.MT_AREA);
 					//Find the best particle by area
-					if (reports[p].area > bestReports[i].area) {
-						bestReports[i] = reports[p];
+					if (reports[p].area > samples[i].area) {
+						samples[i] = reports[p];
 						bestID = p;
 					}
 				}
-				bestReports[i].boundingBox.left = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
-				bestReports[i].boundingBox.width = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_WIDTH);
-				bestReports[i].boundingBox.top = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
-				bestReports[i].boundingBox.height = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_HEIGHT);
-				bestReports[i].estimatedWidth = NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_EQUIVALENT_RECT_LONG_SIDE);
-				bestReports[i].estimatedHeight = NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_EQUIVALENT_RECT_SHORT_SIDE);
-				bestReports[i].alpha = Math.asin((2.0 * TARGET_VERTICAL_DISTANCE * bestReports[i].estimatedHeight) / (FOCAL_LENGTH * TARGET_HEIGHT)) / 2.0;
-			} 
+				samples[i].boundingBox.left = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_LEFT);
+				samples[i].boundingBox.width = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_WIDTH);
+				samples[i].boundingBox.top = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_TOP);
+				samples[i].boundingBox.height = (int) NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_BOUNDING_RECT_HEIGHT);
+				//bestReports[i].estimatedWidth = NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_MAX_HORIZ_SEGMENT_LENGTH_RIGHT) - NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_MAX_HORIZ_SEGMENT_LENGTH_LEFT);
+				samples[i].estimatedHeight = NIVision.imaqMeasureParticle(binaryFrame, bestID, 0, NIVision.MeasurementType.MT_AVERAGE_VERT_SEGMENT_LENGTH);
+				samples[i].alpha = Math.asin((2.0 * TARGET_VERTICAL_DISTANCE * samples[i].estimatedHeight) / (FOCAL_LENGTH * TARGET_HEIGHT)) / 2.0;
+			}
 		}
     	this.isGoal = isGoal;
     	if (isGoal) {
-    		Arrays.sort(bestReports);
-    		HawkReport best = bestReports[SAMPLES_TO_AVERAGE / 2];
+    		Arrays.sort(samples);
+    		HawkReport best = samples[SAMPLES_TO_AVERAGE / 2];
     		alpha = best.alpha;
     		double h = best.estimatedHeight;
-        	double w = best.estimatedWidth;
-    		//FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 606);
+        	//double w = best.estimatedWidth;
+    		FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 570);
     		//FOV = SmartDashboard.getNumber("VFOV", 0.65);
     		distance = TARGET_VERTICAL_DISTANCE / Math.tan(alpha);
     		//distance = TARGET_HEIGHT * FRAME_HEIGHT / (2 * h * FOV);
-    		beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
-    		gamma = 2.0 * Math.atan(((best.boundingBox.left + (0.5 * best.boundingBox.width / 2.0) - offset) - (FRAME_WIDTH / 2.0)) / 700.0);
-    		delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) / Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));
+    		//beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
+    		gamma = -2.0 * Math.atan(((best.boundingBox.left + (offset * best.boundingBox.width * 0.5)) - (FRAME_WIDTH * 0.5)) / 700.0);
+    		//delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) / Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));
     		zeta = (best.boundingBox.top + h - VERTICAL_CROSHAIR) / 130.0;
     		//NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, best.boundingBox, NIVision.DrawMode.DRAW_VALUE, NIVision.ShapeMode.SHAPE_RECT, 0.0f);
 		} else {
@@ -192,11 +193,11 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 			delta = 0.0;
 			zeta = 0.0;
 		}
-    	//CameraServer.getInstance().setImage(binaryFrame);
+    	//CameraServer.getInstance().setImage(frame);
     }
     
     private class HawkReport extends NIVision.ParticleReport implements Comparator<HawkReport> {
-    	public double estimatedWidth;
+    	//public double estimatedWidth;
     	public double estimatedHeight;
     	public double alpha;
     	
@@ -228,6 +229,10 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	
 	public double getGamma() {
 		return gamma;
+	}
+	
+	public double getGammaD() {
+		return gamma * (180.0 / Math.PI);
 	}
 	
 	public double getDelta() {

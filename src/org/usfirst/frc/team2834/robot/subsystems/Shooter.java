@@ -29,15 +29,20 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private Encoder rightEncoder;
 	private final double P = 0.0000005;
 	private final double I = 0.0;
-	private final double D = -0.0000005;
+	private final double D = -0.000001;
 	private final double F = 0.000003;
 	public static final double DEFAULT_SETPOINT = 51000.0;
+	public static final double DEFENSE_SETPOINT = 45700.0;
+	public static final double LOW_SETPOINT = 22000.0;
+	public static final double SLOPE;
 	private final double TOLERANCE = 3000;
 	
+	static {
+		SLOPE = (DEFENSE_SETPOINT - DEFAULT_SETPOINT) / 56.0;
+	}
     // Initialize your subsystem here
     public Shooter() {
         super("Shooter");
-        
         //Initialize motors and their respective sensors
         leftMotor = new Victor(LEFT_SHOOTER_MOTOR);
         rightMotor = new Victor(RIGHT_SHOOTER_MOTOR);

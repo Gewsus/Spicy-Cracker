@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 public class PushToShoot extends CommandGroup {
     
     public  PushToShoot() {
+    	super("Push to Shoot");
         addSequential(new PusherOut(true));
         addSequential(new WaitCommand(1.0));
         addSequential(new PusherOut(false));

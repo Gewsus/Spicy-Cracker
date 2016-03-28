@@ -3,7 +3,6 @@ package org.usfirst.frc.team2834.robot.commands;
 import org.usfirst.frc.team2834.robot.Robot;
 import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -14,7 +13,7 @@ public class PusherOut extends Command {
 	private double output;
 	
     public PusherOut(boolean out) {
-    	super("Pusher Out: " + out, 0.5);
+    	super("Pusher Out: " + out);
         requires(Robot.pusher);
         output = out ? Pusher.OUT : Pusher.IN;
     }
@@ -30,7 +29,7 @@ public class PusherOut extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut();
+        return true;
     }
 
     // Called once after isFinished returns true

@@ -1,51 +1,49 @@
-package org.usfirst.frc.team2834.robot.commands;
+package org.usfirst.frc.team2834.robot.commands.vision;
 
 import org.usfirst.frc.team2834.robot.Robot;
+import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class AutoDriveToTarget extends Command {
+public class ShootZeta extends Command {
 
-	private double power = 0.0;
-	
-    public AutoDriveToTarget() {
-    	super("Auto Drive to Target");
-        requires(Robot.drivetrain);
-        requires(Robot.vision);
+    public ShootZeta() {
+        super("Shoot Zeta");
+        requires(Robot.shooter);
+        //requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	//Robot.vision.calculate();
-    	Timer.delay(0.5);
-    	power = Robot.vision.getZeta();
-    	setTimeout(1);
+    	Robot.shooter.reset();
+    	Robot.shooter.enable();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(power, 0.0, false);
+    	//new PusherOut(false).start();
+    	double s = Shooter.DEFAULT_SETPOINT + (Robot.vision.getZeta() * 6300);
+    	Robot.shooter.setShooterSetpoints(s, s);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return isTimedOut();
+        return false;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.drivetrain.haloDrive(-power, 0.0, false);
-    	Timer.delay(0.1);
-    	Robot.drivetrain.setZero();
+    	Robot.shooter.disable();
+    	Robot.shooter.setShooterOutput(0, 0);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
     	end();
+    	
     }
 }

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class AnglerOverride extends Command {
 
     public AnglerOverride() {
-    	super("Angle Override");
+    	super("Angler Override");
         requires(Robot.angler);
     }
 

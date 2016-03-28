@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2834.robot.commands;
+package org.usfirst.frc.team2834.robot.commands.vision;
 
 import org.usfirst.frc.team2834.robot.Robot;
 
@@ -7,15 +7,19 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class UseShooterView extends Command {
+public class SwapCameraView extends Command {
 	
-    public UseShooterView() {
-    	super("Use Shooter View");
+    public SwapCameraView() {
+    	super("Swap Camera View");
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.vision.useGroundView();
+    	if(Robot.vision.isShooterView()) {
+    		Robot.vision.useGroundView();
+    	} else {
+    		Robot.vision.useShooterView();
+    	}
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -24,12 +28,11 @@ public class UseShooterView extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.vision.useShooterView();
     }
 
     // Called when another command which requires one or more of the same

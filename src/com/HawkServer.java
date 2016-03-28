@@ -10,18 +10,18 @@ package com;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-//import java.io.OutputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-//import java.nio.ByteOrder;
+import java.nio.ByteOrder;
 import java.util.ArrayDeque;
-//import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Deque;
-//import java.util.List;
-//import java.util.NoSuchElementException;
-//import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.vision.USBCamera;
 
 // replicates CameraServer.cpp in java lib
 
+@SuppressWarnings("unused")
 public class HawkServer {
 
   private static final int kPort = 1180;
@@ -58,17 +59,11 @@ public class HawkServer {
   private boolean m_autoCaptureStarted;
   private boolean m_hwClient = true;
   private USBCamera m_camera;
-  private String m_cameraName;
+  private USBCamera[] m_cameras;
+  private int m_currentCam = 0;
   private CameraData m_imageData;
   private Deque<ByteBuffer> m_imageDataPool;
 
-  Thread captureThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        capture();
-      }
-    });
-  
   private class CameraData {
     RawData data;
     int start;
@@ -113,6 +108,11 @@ public class HawkServer {
     notifyAll();
   }
 
+  public void setCurrentCamera(int cam)
+  {
+	  this.m_currentCam = cam;
+  }
+  
   /**
    * Manually change the image that is served by the MJPEG stream. This can be
    * called to pass custom annotated images to the dashboard. Note that, for
@@ -162,9 +162,9 @@ public class HawkServer {
    * after this is called. This overload calles
    * {@link #startAutomaticCapture(String)} with the default camera name
    */
-  public void startAutomaticCapture() {
-    startAutomaticCapture(kDefaultCameraName);
-  }
+  /*public void startAutomaticCapture() {
+    startAutomaticCapture(USBCamera.kDefaultCameraName);
+  }*/
 
   /**
    * Start automatically capturing images to send to the dashboard.
@@ -175,42 +175,43 @@ public class HawkServer {
    *
    * @param cameraName The name of the camera interface (e.g. "cam1")
    */
-  public void startAutomaticCapture(String cameraName) {
+  public void startAutomaticCapture(String...cameraNames) {
     try {
-      USBCamera camera = new USBCamera(cameraName);
-      camera.openCamera();
-      if (m_autoCaptureStarted) {
-      	if(!m_cameraName.equals(cameraName)) {
-      		stopAutomaticCapture();
-      	} else {
-      		return;
-      	}
-      }
-      startAutomaticCapture(camera);
+      USBCamera[] cameras = new USBCamera[cameraNames.length];
+      for (int i = 0; i < cameraNames.length; i++) {
+		cameras[i] = new USBCamera(cameraNames[i]);
+		cameras[i].openCamera();
+	  }
+      startAutomaticCapture(cameras);
     } catch (VisionException ex) {
       DriverStation.reportError(
-          "Error when starting the camera: " + cameraName + " " + ex.getMessage(), true);
+          "Error when starting the camera: " + ex.getMessage(), true);
     }
   }
 
-  private synchronized void startAutomaticCapture(USBCamera camera) {
+  public synchronized void startAutomaticCapture(USBCamera...cameras) {
+    if (m_autoCaptureStarted)
+      return;
     m_autoCaptureStarted = true;
-    m_camera = camera;
+    m_cameras = cameras;
 
-    m_camera.startCapture();
+    for(USBCamera c : cameras) {
+    	c.startCapture();
+    }
 
+    Thread captureThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        capture();
+      }
+    });
     captureThread.setName("Camera Capture Thread");
     captureThread.start();
   }
 
-  public void stopAutomaticCapture() {
-	  m_autoCaptureStarted = false;
-	  Timer.delay(.1);
-  }
-  
   protected void capture() {
     Image frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-    while (m_autoCaptureStarted) {
+    while (true) {
       boolean hwClient;
       ByteBuffer dataBuffer = null;
       synchronized (this) {
@@ -224,10 +225,10 @@ public class HawkServer {
         if (hwClient && dataBuffer != null) {
           // Reset the image buffer limit
           dataBuffer.limit(dataBuffer.capacity() - 1);
-          m_camera.getImageData(dataBuffer);
+          m_cameras[m_currentCam].getImageData(dataBuffer);
           setImageData(new RawData(dataBuffer), 0);
         } else {
-          m_camera.getImage(frame);
+          m_cameras[m_currentCam].getImage(frame);
           setImage(frame);
         }
       } catch (VisionException ex) {
@@ -261,17 +262,17 @@ public class HawkServer {
    * @param size The size to use
    */
   public synchronized void setSize(int size) {
-    if (m_camera == null)
+    if (m_cameras[m_currentCam] == null)
       return;
     switch (size) {
       case kSize640x480:
-        m_camera.setSize(640, 480);
+    	m_cameras[m_currentCam].setSize(640, 480);
         break;
       case kSize320x240:
-        m_camera.setSize(320, 240);
+    	m_cameras[m_currentCam].setSize(320, 240);
         break;
       case kSize160x120:
-        m_camera.setSize(160, 120);
+    	m_cameras[m_currentCam].setSize(160, 120);
         break;
     }
   }
@@ -303,10 +304,10 @@ public class HawkServer {
    * @throws IOException if the Socket connection fails
    * @throws InterruptedException if the sleep is interrupted
    */
-  protected void serve() throws IOException, InterruptedException {
+  @SuppressWarnings("resource")
+protected void serve() throws IOException, InterruptedException {
 
-    @SuppressWarnings("resource")
-	ServerSocket socket = new ServerSocket();
+    ServerSocket socket = new ServerSocket();
     socket.setReuseAddress(true);
     InetSocketAddress address = new InetSocketAddress(kPort);
     socket.bind(address);
@@ -331,13 +332,13 @@ public class HawkServer {
         // Wait for the camera
         synchronized (this) {
           System.out.println("Camera not yet ready, awaiting image");
-          if (m_camera == null)
+          if (m_cameras[m_currentCam] == null)
             wait();
           m_hwClient = compression == kHardwareCompression;
           if (!m_hwClient)
             setQuality(100 - compression);
-          else if (m_camera != null)
-            m_camera.setFPS(fps);
+          else if (m_cameras[m_currentCam] != null)
+        	m_cameras[m_currentCam].setFPS(fps);
           setSize(size);
         }
 

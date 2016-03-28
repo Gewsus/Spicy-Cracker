@@ -1,6 +1,13 @@
 package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.*;
+import org.usfirst.frc.team2834.robot.commands.vision.AutoCenterGoal;
+import org.usfirst.frc.team2834.robot.commands.vision.AutoDriveToTarget;
+import org.usfirst.frc.team2834.robot.commands.vision.ShootDistance;
+import org.usfirst.frc.team2834.robot.commands.vision.ShootZeta;
+import org.usfirst.frc.team2834.robot.commands.vision.TestAutoLineUp;
+import org.usfirst.frc.team2834.robot.commands.vision.SwapCameraView;
+import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 
 import com.DashboardSender;
 
@@ -24,16 +31,16 @@ public class OI implements RobotMap, DashboardSender {
 	public final JoystickButton setDriveMotors;
 	public final JoystickButton setDriveReverse;
 	public final JoystickButton shoot;
-	public final JoystickButton stepUp;
-	public final JoystickButton stepDown;
+	public final JoystickButton lowGoalSetpoint;
+	public final JoystickButton autoSetpoint;
 	public final JoystickButton defaultSetpoint;
 	public final JoystickButton defenseSetpoint;
 	public final JoystickButton shooterOverride;
-	public final JoystickButton angleOverride;
-	public final JoystickButton selectSetpoint;
+	public final JoystickButton anglerOverride;
+	public final JoystickButton selectAnglerSetpoint;
 	public final JoystickButton cancelShooter;
 	public final JoystickButton autoRotate;
-	public final JoystickButton shooterView;
+	public final JoystickButton shooterViewToggle;
 	public final JoystickButton shooterIntake;
 	public final JoystickButton resumeHalo;
 	
@@ -47,18 +54,18 @@ public class OI implements RobotMap, DashboardSender {
 		setDriveMotors = new JoystickButton(rightDrive, SET_DRIVE_MOTORS_BUTTON);
 		setDriveReverse = new JoystickButton(leftDrive, SET_DRIVE_REVERSE_BUTTON);
 		shoot = new JoystickButton(operator, SHOOT_BUTTON);
-		stepUp = new JoystickButton(operator, SHOOTER_STEP_UP_BUTTON);
-		stepDown = new JoystickButton(operator, SHOOTER_STEP_DOWN_BUTTON);
-		defaultSetpoint = new JoystickButton(operator, DEFAULT_SHOOTER_SETPOINT_BUTTON);
+		lowGoalSetpoint = new JoystickButton(operator, LOW_GOAL_SETPOINT_BUTTON);
+		autoSetpoint = new JoystickButton(operator, AUTO_SETPOINT_BUTTON);
+		defaultSetpoint = new JoystickButton(operator, DEFAULT_SETPOINT_BUTTON);
 		defenseSetpoint = new JoystickButton(operator, DEFENSE_SETPOINT_BUTTON);
 		shooterOverride = new JoystickButton(operator, SHOOTER_OVERRIDE_BUTTON);
-		angleOverride = new JoystickButton(operator, ANGLER_OVERRIDE_BUTTON);
-		selectSetpoint = new JoystickButton(operator, SELECT_ANGLER_SETPOINT_BUTTON);
-		cancelShooter = new JoystickButton(operator, CANCEL_SHOOTER_COMMANDS);
-		autoRotate = new JoystickButton(rightDrive, ROTATE_ON_TARGET);
-		shooterView = new JoystickButton(rightDrive, SHOOTER_VIEW);
-		shooterIntake = new JoystickButton(operator, SHOOTER_INTAKE);
-		resumeHalo = new JoystickButton(leftDrive, RESUME_HALO);
+		anglerOverride = new JoystickButton(operator, ANGLER_OVERRIDE_BUTTON);
+		selectAnglerSetpoint = new JoystickButton(operator, SELECT_ANGLER_SETPOINT_BUTTON);
+		cancelShooter = new JoystickButton(operator, CANCEL_SHOOTER_BUTTON);
+		autoRotate = new JoystickButton(rightDrive, AUTO_ROTATE_BUTTON);
+		shooterViewToggle = new JoystickButton(rightDrive, SHOOTER_VIEW_TOGGLE_BUTTON);
+		shooterIntake = new JoystickButton(operator, SHOOTER_INTAKE_BUTTON);
+		resumeHalo = new JoystickButton(leftDrive, RESUME_HALO_BUTTON);
 		
 		//Set button functions
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
@@ -68,21 +75,23 @@ public class OI implements RobotMap, DashboardSender {
 		defaultSetpoint.whileHeld(new ShooterSetSetpoint());
 		defaultSetpoint.whenReleased(new FreeShooter());
 		shooterOverride.whileHeld(new ShooterOverride());
-		angleOverride.whileHeld(new AnglerOverride());
+		anglerOverride.whileHeld(new AnglerOverride());
 		//selectSetpoint.whenPressed(new SelectAngleSetpoint());
 		cancelShooter.whenPressed(new FreeShooter());
 		autoRotate.whenPressed(new AutoCenterGoal());
-		shooterView.toggleWhenPressed(new UseShooterView());
+		shooterViewToggle.whenPressed(new SwapCameraView());
 		shooterIntake.whileHeld(new ShooterIntake());
 		resumeHalo.whenPressed(new HaloDrive());
-		defenseSetpoint.whileHeld(new ShooterSetSetpoint(47000));
-		stepDown.whileHeld(new ShootZeta());
+		defenseSetpoint.whileHeld(new ShooterSetSetpoint(Shooter.DEFENSE_SETPOINT));
+		autoSetpoint.whileHeld(new ShootDistance());
+		lowGoalSetpoint.whileHeld(new ShooterSetSetpoint(Shooter.LOW_SETPOINT));
 	}
 
 	@Override
 	public void dashboardInit() {
 		SmartDashboard.putData(new AnglerZero());
 		SmartDashboard.putData(new ShootZeta());
+		SmartDashboard.putData(new ShootDistance());
 		SmartDashboard.putData(new PushToShoot());
 		//SmartDashboard.putData(new RotateToAngle(90, 0));
 		//SmartDashboard.putData(new DoLowBar());

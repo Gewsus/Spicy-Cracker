@@ -1,12 +1,9 @@
 package org.usfirst.frc.team2834.robot.subsystems;
 
 import org.usfirst.frc.team2834.robot.RobotMap;
-import org.usfirst.frc.team2834.robot.commands.PusherOff;
-import org.usfirst.frc.team2834.robot.commands.PusherOut;
 
 import com.DashboardSender;
 
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,8 +22,8 @@ public class Pusher extends Subsystem implements RobotMap, DashboardSender {
     /*public static final Relay.Value OUT = Relay.Value.kReverse;
     public static final Relay.Value OFF = Relay.Value.kOff;
     public static final Relay.Value IN = Relay.Value.kForward;*/
-    public static final double OUT = 0.3;
-    public static final double IN = 1.0;
+    public static final double OUT = 0.74;
+    public static final double IN = 0.0;
 
     public Pusher() {
     	super("Pusher");
@@ -49,17 +46,17 @@ public class Pusher extends Subsystem implements RobotMap, DashboardSender {
     }*/
     
     public void initDefaultCommand() {
-        setDefaultCommand(new PusherOff());
+        //setDefaultCommand(new PusherOff());
     }
 
 	@Override
 	public void dashboardInit() {
-		SmartDashboard.putData("Relay", pusher);
+		//SmartDashboard.putData("Relay", pusher);
 	}
 
 	@Override
 	public void dashboardPeriodic() {
-		
+		SmartDashboard.putNumber("Pusher Servo pos", pusher.get());
 	}
 }
 

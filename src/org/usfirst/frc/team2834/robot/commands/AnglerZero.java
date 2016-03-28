@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class AnglerZero extends Command {
 
     public AnglerZero() {
-    	super("Zero Shooter Angle");
+    	super("Zero Angler");
         requires(Robot.angler);
     }
 

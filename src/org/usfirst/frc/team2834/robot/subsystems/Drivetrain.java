@@ -98,7 +98,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
      * @param scaler Scaled value that the input is to the power of.
      * @return scaled input value
      */
-    private double scale(double input, double scaler) {
+    public double scale(double input, double scaler) {
     	return input * Math.pow(Math.abs(input), scaler - 1.0);
     }
     
@@ -140,16 +140,24 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
     	return gyro.getPitch();
     }
     
+    public double getRoll() {
+    	return gyro.getRoll();
+    }
+    
 	public void initDefaultCommand() {
         setDefaultCommand(new HaloDrive());
     }
 
 	public boolean isUpSlope() {
-		return getPitch() > 5;
+		return getPitch() > 5 || getRoll() > 5;
 	}
 	
 	public boolean isDownSlope() {
-		return getPitch() < -5;
+		return getPitch() < -5 || getRoll() < -5;
+	}
+	
+	public boolean isStable() {
+		return Math.abs(gyro.getRawGyroX()) < 5 && Math.abs(gyro.getRawGyroY()) < 5;
 	}
 	
 	private double coerceToYawRange(double yaw) {

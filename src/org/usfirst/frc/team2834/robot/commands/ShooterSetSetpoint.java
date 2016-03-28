@@ -30,6 +30,7 @@ public class ShooterSetSetpoint extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	//new PusherOut(false).start();
     	Robot.shooter.reset();
     	Robot.shooter.enable();
     	Robot.shooter.setShooterSetpoints(leftSetpoint, rightSetpoint);

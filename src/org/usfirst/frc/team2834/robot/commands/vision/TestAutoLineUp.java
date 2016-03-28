@@ -1,7 +1,9 @@
-package org.usfirst.frc.team2834.robot.commands;
+package org.usfirst.frc.team2834.robot.commands.vision;
 
+import org.usfirst.frc.team2834.robot.commands.FreeShooter;
+import org.usfirst.frc.team2834.robot.commands.PushToShoot;
+import org.usfirst.frc.team2834.robot.commands.ShooterSetSetpoint;
 import org.usfirst.frc.team2834.robot.commands.auto.SetDriveReverse;
-import org.usfirst.frc.team2834.robot.commands.auto.WaitForTarget;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;

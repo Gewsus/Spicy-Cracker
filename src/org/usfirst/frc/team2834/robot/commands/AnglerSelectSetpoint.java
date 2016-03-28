@@ -13,7 +13,7 @@ public class AnglerSelectSetpoint extends Command {
 	private final double STEP_VALUE = 5.0;
 	
     public AnglerSelectSetpoint() {
-    	super("Select angle setpoint");
+    	super("Angler Select Setpoint");
         requires(Robot.angler);
     }
 
@@ -35,9 +35,9 @@ public class AnglerSelectSetpoint extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if(Robot.oi.stepUp.get()) {
+    	if(Robot.oi.lowGoalSetpoint.get()) {
     		Robot.angler.setSetpointRelative(STEP_VALUE);
-    	} else if (Robot.oi.stepDown.get()) {
+    	} else if (Robot.oi.autoSetpoint.get()) {
     		Robot.angler.setSetpointRelative(-STEP_VALUE);
     	}
     }

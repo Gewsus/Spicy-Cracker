@@ -10,13 +10,14 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveStopIfFlat extends Command {
 	
-	private boolean stop = false;
 	private double power;
+	private double rotate;
 	
-    public DriveStopIfFlat(double power) {
-    	super("Drive, Stop if Flat: " + power);
+    public DriveStopIfFlat(double power, double rotate) {
+    	super("Drive, Stop if Flat: " + power + "|" + rotate);
         requires(Robot.drivetrain);
         this.power = power;
+        this.rotate = rotate;
     }
 
     // Called just before this Command runs the first time
@@ -25,23 +26,17 @@ public class DriveStopIfFlat extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivetrain.haloDrive(power, 0, false);
-    	if(!Robot.drivetrain.isUpSlope() && !Robot.drivetrain.isDownSlope()) {
-    		Timer.delay(0.25);
-    		if(!Robot.drivetrain.isUpSlope() && !Robot.drivetrain.isDownSlope()) {
-    			stop = true;
-    		}
-    	}
+    	Robot.drivetrain.haloDrive(power, rotate, false);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	return stop;
+    	return !Robot.drivetrain.isUpSlope() && !Robot.drivetrain.isDownSlope() && Robot.drivetrain.isStable();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.drivetrain.haloDrive(-0.1, 0.0, false);
+    	Robot.drivetrain.haloDrive(-0.2, 0.0, false);
 		Timer.delay(0.25);
 		Robot.drivetrain.setZero();
     }

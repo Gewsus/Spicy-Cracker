@@ -18,6 +18,7 @@ public class ShooterTestSetpoint extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	//new PusherOut(false).start();
     	Robot.shooter.reset();
     	Robot.shooter.enable();
     	double set = SmartDashboard.getNumber("Test Shooter Setpoint", 30000);
