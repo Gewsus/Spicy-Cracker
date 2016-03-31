@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AnglerTestSetpoint extends Command {
 
     public AnglerTestSetpoint() {
-        super("Angler test setpoint");
+        super("Angler Test Setpoint");
         requires(Robot.angler);
         SmartDashboard.putNumber("Test Angler Setpoint", 0.0);
     }

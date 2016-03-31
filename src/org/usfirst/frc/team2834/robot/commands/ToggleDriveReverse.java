@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class ToggleDriveReverse extends Command {
 
     public ToggleDriveReverse() {
-    	super("Toggle Drive to " + (Robot.drivetrain.isReverse() ? "standard" : "reverse"));
+    	super("Toggle Drive");
         requires(Robot.drivetrain);
     }
 

@@ -13,7 +13,7 @@ public class PusherOut extends Command {
 	private double output;
 	
     public PusherOut(boolean out) {
-    	super("Pusher Out: " + out);
+    	super("Pusher Out: [" + out + "]");
         requires(Robot.pusher);
         output = out ? Pusher.OUT : Pusher.IN;
     }

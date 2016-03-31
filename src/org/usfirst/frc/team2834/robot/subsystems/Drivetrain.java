@@ -187,7 +187,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 				output += FEED_FORWARD;
 			}
 			autoRotate = output;*/
-			autoRotate = scale(output, 0.1);
+			autoRotate = scale(output, 0.05);
 		}
 	}
 

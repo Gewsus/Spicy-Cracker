@@ -27,6 +27,7 @@ public interface RobotMap {
 	int SHOOTER_VIEW_TOGGLE_BUTTON = 2;
 	int SHOOTER_INTAKE_BUTTON = 8;
 	int RESUME_HALO_BUTTON = 2;
+	int DETATCH_DRAWBRIDGE_BUTTON = 12;
 	
 	//Drivetrain motor PWM ports
 	int FRONT_LEFT_DRIVETRAIN = 0;
@@ -48,5 +49,5 @@ public interface RobotMap {
 	//int LEFT_ANGLER_MOTOR = 10;
 	//int ANGLER_ENCODER = 0;
 	int ANGLER_ENCODER_A = 6;
-	int ANGLER_ENCODER_B = 5;
+	int ANGLER_ENCODER_B = 7;
 }

@@ -37,7 +37,8 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	private final double TARGET_VERTICAL_DISTANCE = 82.0;
 	//private final double DIST_TO_ROTATION_CENTER = 10;
 	//570 Practice
-	private double FOCAL_LENGTH = 570.0; //Coefficient for the relation between a camera image and actual dimensions
+	//580 Competition
+	private double FOCAL_LENGTH = 580.0; //Coefficient for the relation between a camera image and actual dimensions
 	private double FOV = 0.65; 
 	private final int SAMPLES_TO_AVERAGE = 1;
 	private final String SHOOTER_CAMERA = "cam0";
@@ -176,7 +177,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     		alpha = best.alpha;
     		double h = best.estimatedHeight;
         	//double w = best.estimatedWidth;
-    		FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 570);
+    		//FOCAL_LENGTH = SmartDashboard.getNumber("Focal Length", 570);
     		//FOV = SmartDashboard.getNumber("VFOV", 0.65);
     		distance = TARGET_VERTICAL_DISTANCE / Math.tan(alpha);
     		//distance = TARGET_HEIGHT * FRAME_HEIGHT / (2 * h * FOV);

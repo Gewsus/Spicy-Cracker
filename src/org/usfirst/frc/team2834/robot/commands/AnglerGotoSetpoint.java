@@ -12,7 +12,7 @@ public class AnglerGotoSetpoint extends Command {
 	double setpoint;
 
     public AnglerGotoSetpoint(double setpoint) {
-        super("Angler goto Setpoint: " + setpoint);
+        super("Angler goto Setpoint: [" + setpoint + "]");
         requires(Robot.angler);
         this.setpoint = setpoint;
     }

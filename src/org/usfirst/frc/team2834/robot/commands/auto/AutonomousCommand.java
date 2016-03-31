@@ -13,18 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class AutonomousCommand extends CommandGroup {
     
-    public  AutonomousCommand() {
-    	super("Autonomous Command");
-    	//Select autonomous mode based on input from dashboard
-    	int mode = (int) SmartDashboard.getNumber("Auto Mode", 0);
-    	int position = (int) SmartDashboard.getNumber("Auto Position", 0);
-    	int defense = (int) SmartDashboard.getNumber("Auto Defense", 0);
-    	boolean direction = SmartDashboard.getBoolean("Auto Direction", false);
+    public  AutonomousCommand(int mode, int position, int defense, boolean direction) {
+    	super("Autonomous Command: [" + mode + "] [" + position + "] [" + defense + "] [" + direction + "]");
     	
     	//If the robot starts facing backwards(i.e. for Cheval or Portculis) let the robot know
     	addSequential(new PusherOut(false));
     	addSequential(new SetDriveReverse(!direction));
-    	Robot.drivetrain.startingAngle = direction ? 180 : 0;
     	
     	if (mode != 0) {
 			if (position != 5) {
@@ -87,14 +81,14 @@ public class AutonomousCommand extends CommandGroup {
 							}
 							addSequential(new SetDriveReverse(true));
 							//addSequential(new PusherOut(false));
-							addParallel(new TimedShooter(-0.2, 1.75));
+							addParallel(new TimedShooter(-0.2, 1.5));
 							addSequential(new WaitForTarget());
 							addSequential(new AutoCenterGoal());
 							addSequential(new AutoDriveToTarget());
-							addSequential(new WaitCommand(1));
+							addSequential(new WaitCommand(0.25));
 							addSequential(new PusherOut(false));
 							addParallel(new ShootDistance());
-							addSequential(new WaitCommand(1));
+							addSequential(new WaitCommand(1.5));
 							//addSequential(new AutoDriveToTarget());
 							//addSequential(new AutoDriveToTarget());
 							addSequential(new AutoCenterGoal());

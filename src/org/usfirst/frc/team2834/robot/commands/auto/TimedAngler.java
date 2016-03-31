@@ -13,7 +13,7 @@ public class TimedAngler extends Command {
 	double seconds;
 
     public TimedAngler(double power, double seconds) {
-        super("Timed Angler: " + power + " | " + seconds);
+        super("Timed Angler: [" + power + "] [" + seconds + "]");
         requires(Robot.angler);
         this.power = power;
         this.seconds = seconds;

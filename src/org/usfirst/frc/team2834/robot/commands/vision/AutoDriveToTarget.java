@@ -21,9 +21,9 @@ public class AutoDriveToTarget extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	//Robot.vision.calculate();
-    	Timer.delay(0.5);
+    	Timer.delay(0.25);
     	power = Robot.vision.getZeta();
-    	setTimeout(1);
+    	setTimeout(0.9);
     }
 
     // Called repeatedly when this Command is scheduled to run

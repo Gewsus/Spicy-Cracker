@@ -14,7 +14,7 @@ public class TimedHaloDrive extends Command {
 	boolean holdRotation;
 	
     public TimedHaloDrive(double power, double rotate, boolean holdRotation, double seconds) {
-    	super("Timed Halo Drive: " + power + "|" + rotate + "|" + holdRotation + "|" + seconds, seconds);
+    	super("Timed Halo Drive: [" + power + "] [" + rotate + "] [" + holdRotation + "] [" + seconds + "]", seconds);
         requires(Robot.drivetrain);
         this.power = power;
         this.rotate = rotate;

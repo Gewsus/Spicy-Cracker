@@ -22,7 +22,7 @@ public class ShooterSetSetpoint extends Command {
     }
     
     public ShooterSetSetpoint(double leftSetpoint, double rightSetpoint) {
-    	super("Shooter set setpoint: " + leftSetpoint + " : " + rightSetpoint, 10);
+    	super("Shooter Set Setpoint: [" + leftSetpoint + "] [" + rightSetpoint + "]", 10);
     	requires(Robot.shooter);
         this.leftSetpoint = leftSetpoint;
         this.rightSetpoint = rightSetpoint;

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShooterTestSetpoint extends Command {
     
     public ShooterTestSetpoint() {
-    	super("Shooter Test Setpoints");
+    	super("Shooter Test Setpoint");
     	requires(Robot.shooter);
     	SmartDashboard.putNumber("Test Shooter Setpoint", 30000);
     }

@@ -9,15 +9,15 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class RotateToAngle extends Command {
 	
-	double angle;
-	double forwardPower;
+	private double angle;
+	private double forwardPower;
 
 	public RotateToAngle(double angle) {
 		this(angle, 0.0);
 	}
 	
     public RotateToAngle(double angle, double forwardPower) {
-    	super("Rotate to Angle: " + angle, 10);
+    	super("Rotate to Angle: [" + angle + "] [" + forwardPower + "]", 10);
         requires(Robot.drivetrain);
         this.angle = angle;
         this.forwardPower = forwardPower;

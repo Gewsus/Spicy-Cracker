@@ -15,7 +15,7 @@ public class DoCheval extends CommandGroup {
         addParallel(new TimedHaloDrive(0.25, 0.0, false, 4));
         addSequential(new TimedAngler(-0.5, 1));
         addParallel(new WaitAndLift());
-        addSequential(new TimedHaloDrive(0.5, 0.0, false, 2.2));
+        addSequential(new TimedHaloDrive(0.6, 0.0, false, 2.0));
         addSequential(new TimedHaloDrive(-0.25, 0.0, false, 0.2));
         addSequential(new TimedHaloDrive(0.25, 0.0, false, 0.25));
     }

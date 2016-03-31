@@ -21,7 +21,7 @@ public class AutoCenterGoal extends Command {
     	//double angle = Robot.vision.getGamma() * (180.0 / Math.PI);
     	//The camera is upside-down so the angle should be negative
     	//Robot.vision.calculate();
-    	Timer.delay(0.5);
+    	Timer.delay(0.25);
     	Robot.drivetrain.reset();
     	//Robot.drivetrain.setSetpoint(Robot.drivetrain.getYaw());
     	Robot.drivetrain.setSetpointRelative(Robot.vision.getGammaD());

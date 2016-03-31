@@ -43,6 +43,8 @@ public class OI implements RobotMap, DashboardSender {
 	public final JoystickButton shooterViewToggle;
 	public final JoystickButton shooterIntake;
 	public final JoystickButton resumeHalo;
+	public final JoystickButton detatchDrawbridge;
+	public final JoystickButton fullSetpoint;
 	
 	public OI() {
 		//Initialize joysticks
@@ -66,6 +68,8 @@ public class OI implements RobotMap, DashboardSender {
 		shooterViewToggle = new JoystickButton(rightDrive, SHOOTER_VIEW_TOGGLE_BUTTON);
 		shooterIntake = new JoystickButton(operator, SHOOTER_INTAKE_BUTTON);
 		resumeHalo = new JoystickButton(leftDrive, RESUME_HALO_BUTTON);
+		detatchDrawbridge = new JoystickButton(rightDrive, DETATCH_DRAWBRIDGE_BUTTON);
+		fullSetpoint = new JoystickButton(operator, 11);
 		
 		//Set button functions
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
@@ -85,6 +89,8 @@ public class OI implements RobotMap, DashboardSender {
 		defenseSetpoint.whileHeld(new ShooterSetSetpoint(Shooter.DEFENSE_SETPOINT));
 		autoSetpoint.whileHeld(new ShootDistance());
 		lowGoalSetpoint.whileHeld(new ShooterSetSetpoint(Shooter.LOW_SETPOINT));
+		detatchDrawbridge.whenPressed(new AnglerDrawbridgeDetatch());
+		fullSetpoint.whileActive(new ShooterSetSetpoint(100000));
 	}
 
 	@Override

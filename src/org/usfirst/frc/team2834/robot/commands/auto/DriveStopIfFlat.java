@@ -14,7 +14,7 @@ public class DriveStopIfFlat extends Command {
 	private double rotate;
 	
     public DriveStopIfFlat(double power, double rotate) {
-    	super("Drive, Stop if Flat: " + power + "|" + rotate);
+    	super("Drive, Stop if Flat: [" + power + "] [" + rotate);
         requires(Robot.drivetrain);
         this.power = power;
         this.rotate = rotate;

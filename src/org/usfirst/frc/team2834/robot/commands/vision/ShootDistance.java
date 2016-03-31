@@ -25,7 +25,7 @@ public class ShootDistance extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	//new PusherOut(false).start();
-    	double s = Shooter.DEFAULT_SETPOINT + (Shooter.SLOPE * (Robot.vision.getDistance() - 116.0));
+    	double s = Shooter.DEFAULT_SETPOINT + (Shooter.SLOPE * (Robot.vision.getDistance() - 116.0))/* +  1.5 * 0.5 * Math.pow((Robot.vision.getDistance() - 116.0), 2)*/;
     	Robot.shooter.setShooterSetpoints(s, s);
     }
 

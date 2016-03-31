@@ -12,7 +12,7 @@ public class SetDriveSixWheels extends Command {
 	boolean driveMotors;
 	
     public SetDriveSixWheels(boolean driveMotors) {
-    	super("Set Drive Motors: " + driveMotors);
+    	super("Set Drive Motors: " + "[" +(driveMotors ? "6" : "4") + "]");
         requires(Robot.drivetrain);
         this.driveMotors = driveMotors;
     }

@@ -13,7 +13,7 @@ public class RotateAngle extends Command {
 	private double forwardPower;
 
     public RotateAngle(double angle, double forwardPower) {
-    	super("Rotate Angle: " + angle + " | " + forwardPower, 10);
+    	super("Rotate Angle: [" + angle + "] [" + forwardPower + "]", 10);
         requires(Robot.drivetrain);
         this.angle = angle;
         this.forwardPower = forwardPower;

@@ -12,7 +12,7 @@ public class TimedShooter extends Command {
 	double power;
 
     public TimedShooter(double power, double seconds) {
-        super("Timed Shooter: " + power + " | " + seconds, seconds);
+        super("Timed Shooter: [" + power + "] [" + seconds + "]", seconds);
         requires(Robot.shooter);
         //requires(Robot.pusher);
         this.power = power;

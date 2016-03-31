@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -64,10 +65,18 @@ public class Robot extends IterativeRobot {
 	 * This function is called once before autonomous period starts
 	 */
     public void autonomousInit() {
-    	Robot.vision.useShooterView();
-    	Robot.drivetrain.rezero();
-    	Robot.angler.zero();
-    	auto = new AutonomousCommand();
+    	vision.useShooterView();
+    	drivetrain.rezero();
+    	angler.zero();
+    	
+    	//Select autonomous mode based on input from dashboard
+    	int mode = (int) SmartDashboard.getNumber("Auto Mode", 0);
+    	int position = (int) SmartDashboard.getNumber("Auto Position", 0);
+    	int defense = (int) SmartDashboard.getNumber("Auto Defense", 0);
+    	boolean direction = SmartDashboard.getBoolean("Auto Direction", false);
+    	drivetrain.startingAngle = direction ? 180 : 0;
+    	
+    	auto = new AutonomousCommand(mode, position, defense, direction);
 		if (auto != null) auto.start();
     }
 
@@ -80,7 +89,7 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
-    	Robot.vision.useShooterView();
+    	vision.useShooterView();
     	//new FreeShooter().start();
         if (auto != null) auto.cancel();
         new PusherOut(false).start();
