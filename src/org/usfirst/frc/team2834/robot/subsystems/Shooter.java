@@ -27,13 +27,14 @@ public class Shooter extends Subsystem implements RobotMap, DashboardSender {
 	private Victor rightMotor;
 	private Encoder leftEncoder;
 	private Encoder rightEncoder;
-	private final double P = 0.0000004;
+	private final double P = 0.0000006;
 	private final double I = 0.0;
-	private final double D = -0.000002;
+	private final double D = -0.000001;
 	private final double F = 0.000002;
 	public static final double FULL_FUCKING_POWER = 100000.0;
-	public static final double DEFAULT_SETPOINT = 50000.0;
-	public static final double DEFENSE_SETPOINT = 44500.0;
+	public static final double DEFAULT_SETPOINT = 51000.0;
+	//44500
+	public static final double DEFENSE_SETPOINT = 47000.0;
 	public static final double LOW_SETPOINT = 22000.0;
 	public static final double SLOPE;
 	private final double TOLERANCE = 3000;

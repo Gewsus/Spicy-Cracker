@@ -6,7 +6,6 @@ import org.usfirst.frc.team2834.robot.commands.vision.*;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -47,10 +46,14 @@ public class AutonomousCommand extends CommandGroup {
 							case 6:
 								addSequential(new DoPortculis());
 								break;
+							default:
+								addSequential(new WaitCommand(15));
+								System.out.print("Did not select defense");
+								break;
 						}
 						if (mode >= 3) {
 							if(position == 0) {
-								addSequential(new TimedHaloDrive(0.6, 0.0, false, 0.6));
+								addSequential(new TimedHaloDrive(0.6, 0.2, false, 0.6));
 								addSequential(new TimedHaloDrive(-0.2, 0.0, false, 0.1));
 							}
 							if(position == 1) {
@@ -62,12 +65,15 @@ public class AutonomousCommand extends CommandGroup {
 								addSequential(new TimedHaloDrive(0.6, 0.0, false, 0.83));
 								addSequential(new TimedHaloDrive(-0.2, 0.0, false, 0.1));
 							}
+							double offset = 0.75;
 							switch(position) {
 								case 0:
 									addSequential(new RotateToAngle(55));
 									break;
 								case 1:
 									addSequential(new RotateToAngle(55));
+									addSequential(new TimedHaloDrive(-0.5, 0.0, false, 0.3));
+									addSequential(new TimedHaloDrive(0.2, 0.0, false, 0.2));
 									break;
 								case 2:
 									addSequential(new RotateToAngle(15));
@@ -77,21 +83,27 @@ public class AutonomousCommand extends CommandGroup {
 									break;
 								case 4:
 									addSequential(new RotateToAngle(-20));
+									addSequential(new TimedHaloDrive(0.4, 0.0, false, 0.5));
+									addSequential(new TimedHaloDrive(-0.2, 0.0, false, 0.2));
+									offset = 0.5;
 									break;
 							}
 							addSequential(new SetDriveReverse(true));
 							//addSequential(new PusherOut(false));
-							addParallel(new TimedShooter(-0.2, 1.5));
+							addParallel(new TimedShooter(-0.2, 1));
 							addSequential(new WaitForTarget());
-							addSequential(new AutoCenterGoal());
-							addSequential(new AutoDriveToTarget());
+							addSequential(new AutoCenterGoal(offset));
+							addSequential(new DriveDistance());
+							//addSequential(new DriveDistance());
 							addSequential(new WaitCommand(0.25));
 							addSequential(new PusherOut(false));
+							//addParallel(new ShooterSetSetpoint(55000));
 							addParallel(new ShootDistance());
-							addSequential(new WaitCommand(1.5));
 							//addSequential(new AutoDriveToTarget());
 							//addSequential(new AutoDriveToTarget());
-							addSequential(new AutoCenterGoal());
+							addSequential(new AutoCenterGoal(offset));
+							addSequential(new AutoCenterGoal(offset));
+							addSequential(new WaitCommand(3));
 							addSequential(new PushToShoot());
 							//addSequential(new PushToShoot());
 							addSequential(new FreeShooter());

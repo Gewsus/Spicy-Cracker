@@ -17,7 +17,6 @@ public class WaitForTarget extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Timer.delay(1);
     	//Robot.vision.calculate();
     	setTimeout(15);
     }

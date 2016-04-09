@@ -29,25 +29,29 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	private volatile double gamma = 0.0;
 	private volatile double delta = 0.0;
 	private volatile double zeta = 0.0;
+	private double offset = 0.75;
 	//private int FRAME_HEIGHT;
 	private int FRAME_WIDTH;
 	//private final double TARGET_WIDTH = 20.0;
 	private final double TARGET_HEIGHT = 12.0;
+	//250
 	private final int VERTICAL_CROSHAIR = 250;
 	private final double TARGET_VERTICAL_DISTANCE = 82.0;
 	//private final double DIST_TO_ROTATION_CENTER = 10;
 	//570 Practice
 	//580 Competition
-	private double FOCAL_LENGTH = 580.0; //Coefficient for the relation between a camera image and actual dimensions
+	//557
+	private double FOCAL_LENGTH = 548; //Coefficient for the relation between a camera image and actual dimensions
 	private double FOV = 0.65; 
 	private final int SAMPLES_TO_AVERAGE = 1;
-	private final String SHOOTER_CAMERA = "cam0";
-	private final String GROUND_CAMERA = "cam1";
+	private final String SHOOTER_CAMERA = "cam1";
+	private final String GROUND_CAMERA = "cam0";
 	
 	//Image fields
 	private Image frame;		//Frame that will hold the raw image from camera
 	private Image binaryFrame;	//Frame depicting possible targets
 	private int shooterSession;		//Session id for the processing camera
+	HawkReport best;
 	
 	//NIVision fields
 	private NIVision.ParticleFilterCriteria2 criteria[];
@@ -58,16 +62,16 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 	
 	public Vision() {
 		super("Vision");
-		useGroundView();
+		useShooterView();
 		//Setup camera and images
 		frame = NIVision.imaqCreateImage(ImageType.IMAGE_HSL, 0);
 		binaryFrame = NIVision.imaqCreateImage(ImageType.IMAGE_U8, 0);
 		
 		//Set HSV bounds to that of the retro-reflective tape
 		//The color threshold will filter out pixels outside of these ranges
-    	HRange = new NIVision.Range(79, 146);
-    	SRange = new NIVision.Range(115, 255);
-    	LRange = new NIVision.Range(60, 156);
+    	HRange = new NIVision.Range(70, 130);
+    	SRange = new NIVision.Range(179, 255);
+    	LRange = new NIVision.Range(40, 132);
 		
 		//Set criteria to determine which particles to filter out
     	options = new NIVision.ParticleFilterOptions2(0, 0, 1, 1);
@@ -75,9 +79,9 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		criteria = new NIVision.ParticleFilterCriteria2[3];
     	criteria[0] = new NIVision.ParticleFilterCriteria2();
     	criteria[0].parameter = NIVision.MeasurementType.MT_AREA;
-    	criteria[0].lower = 0;
-    	criteria[0].upper = 2500;
-    	criteria[0].exclude = 1;
+    	criteria[0].lower = 1000;
+    	criteria[0].upper = 1000000;
+    	//criteria[0].exclude = 1;
     	//Filter for the particles that may appear due to the light shining on crossbars
     	criteria[1] = new NIVision.ParticleFilterCriteria2();
     	criteria[1].parameter = NIVision.MeasurementType.MT_BOUNDING_RECT_BOTTOM;
@@ -126,11 +130,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		}
 	}
 	
-	public void calculate() {
-		calculate(0.75);
-	}
-	
-    public void calculate(double offset) {
+    public void calculate() {
     	HawkReport[] samples = new HawkReport[SAMPLES_TO_AVERAGE];
     	boolean isGoal = false;
     	for (int i = 0; i < SAMPLES_TO_AVERAGE; i++) {
@@ -141,7 +141,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     		FRAME_WIDTH = NIVision.imaqGetImageSize(binaryFrame).width;
 			//Complete any partial shapes
 			NIVision.imaqConvexHull(binaryFrame, binaryFrame, 1);
-			NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, options, null);
+			int error = NIVision.imaqParticleFilter4(binaryFrame, binaryFrame, criteria, options, null);
 			//Generate report for area and sort
 			int particles = NIVision.imaqCountParticles(binaryFrame, 1);
 			//Use the first sample to determine if there is a goal in view
@@ -173,7 +173,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     	this.isGoal = isGoal;
     	if (isGoal) {
     		Arrays.sort(samples);
-    		HawkReport best = samples[SAMPLES_TO_AVERAGE / 2];
+    		best = samples[SAMPLES_TO_AVERAGE / 2];
     		alpha = best.alpha;
     		double h = best.estimatedHeight;
         	//double w = best.estimatedWidth;
@@ -182,7 +182,7 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
     		distance = TARGET_VERTICAL_DISTANCE / Math.tan(alpha);
     		//distance = TARGET_HEIGHT * FRAME_HEIGHT / (2 * h * FOV);
     		//beta = Math.asin(Math.sqrt(1.0 - ((distance * w) / (FOCAL_LENGTH * TARGET_WIDTH))) / Math.cos(alpha));
-    		gamma = -2.0 * Math.atan(((best.boundingBox.left + (offset * best.boundingBox.width * 0.5)) - (FRAME_WIDTH * 0.5)) / 700.0);
+    		gamma = -Math.atan(((best.boundingBox.left + (offset * best.boundingBox.width * 0.5)) - (FRAME_WIDTH * 0.5)) / 500.0);
     		//delta = Math.asin((DIST_TO_ROTATION_CENTER * Math.sin(gamma)) / Math.sqrt(Math.pow(DIST_TO_ROTATION_CENTER, 2) + Math.pow(distance, 2) - 2 * distance * DIST_TO_ROTATION_CENTER * Math.cos(gamma)));
     		zeta = (best.boundingBox.top + h - VERTICAL_CROSHAIR) / 130.0;
     		//NIVision.imaqDrawShapeOnImage(binaryFrame, binaryFrame, best.boundingBox, NIVision.DrawMode.DRAW_VALUE, NIVision.ShapeMode.SHAPE_RECT, 0.0f);
@@ -236,6 +236,11 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		return gamma * (180.0 / Math.PI);
 	}
 	
+	
+	public void setOffset(double offset)
+	{
+		this.offset = offset;
+	}
 	public double getDelta() {
 		return delta;
 	}
@@ -280,6 +285,10 @@ public class Vision extends Subsystem implements Runnable, DashboardSender {
 		SmartDashboard.putNumber("Delta", getDelta());
 		SmartDashboard.putNumber("Zeta", getZeta());
 		SmartDashboard.putBoolean("Camera", shooterView);
+		SmartDashboard.putNumber("BLeft", best.boundingBox.left);
+		SmartDashboard.putNumber("BTop", best.boundingBox.top);
+		SmartDashboard.putNumber("BRight", best.boundingBox.left + best.boundingBox.width);
+		SmartDashboard.putNumber("BBottom", best.boundingBox.top + best.boundingBox.height);
 	}
 }
 

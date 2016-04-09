@@ -28,6 +28,7 @@ public interface RobotMap {
 	int SHOOTER_INTAKE_BUTTON = 8;
 	int RESUME_HALO_BUTTON = 2;
 	int DETATCH_DRAWBRIDGE_BUTTON = 12;
+	int FULL_SETPOINT_BUTTON = 11;
 	
 	//Drivetrain motor PWM ports
 	int FRONT_LEFT_DRIVETRAIN = 0;

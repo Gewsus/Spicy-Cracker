@@ -11,7 +11,7 @@ public class AnglerDrawbridgeDetatch extends CommandGroup {
     
     public  AnglerDrawbridgeDetatch() {
         super("Angler Drawbridge Detatch");
-        addSequential(new TimedAngler(0.3, 0.5));
-        addSequential(new TimedAngler(-0.3, 0.3));
+        addSequential(new TimedAngler(0.7, 0.3));
+        addSequential(new TimedAngler(-0.7, 0.2));
     }
 }

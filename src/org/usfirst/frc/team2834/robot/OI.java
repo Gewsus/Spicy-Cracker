@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.*;
+import org.usfirst.frc.team2834.robot.commands.auto.DriveDistance;
 import org.usfirst.frc.team2834.robot.commands.vision.AutoCenterGoal;
 import org.usfirst.frc.team2834.robot.commands.vision.AutoDriveToTarget;
 import org.usfirst.frc.team2834.robot.commands.vision.ShootDistance;
@@ -69,7 +70,7 @@ public class OI implements RobotMap, DashboardSender {
 		shooterIntake = new JoystickButton(operator, SHOOTER_INTAKE_BUTTON);
 		resumeHalo = new JoystickButton(leftDrive, RESUME_HALO_BUTTON);
 		detatchDrawbridge = new JoystickButton(rightDrive, DETATCH_DRAWBRIDGE_BUTTON);
-		fullSetpoint = new JoystickButton(operator, 11);
+		fullSetpoint = new JoystickButton(operator, FULL_SETPOINT_BUTTON);
 		
 		//Set button functions
 		setDriveMotors.whenPressed(new SetDriveSixWheels(true));
@@ -90,7 +91,7 @@ public class OI implements RobotMap, DashboardSender {
 		autoSetpoint.whileHeld(new ShootDistance());
 		lowGoalSetpoint.whileHeld(new ShooterSetSetpoint(Shooter.LOW_SETPOINT));
 		detatchDrawbridge.whenPressed(new AnglerDrawbridgeDetatch());
-		fullSetpoint.whileActive(new ShooterSetSetpoint(100000));
+		fullSetpoint.whileActive(new ShooterSetSetpoint(Shooter.FULL_FUCKING_POWER));
 	}
 
 	@Override
@@ -109,6 +110,7 @@ public class OI implements RobotMap, DashboardSender {
 		SmartDashboard.putData(new AnglerTestSetpoint());
 		SmartDashboard.putData(new AutoDriveToTarget());
 		SmartDashboard.putData(new TestAutoLineUp());
+		SmartDashboard.putData(new DriveDistance());
 		SmartDashboard.putData(Scheduler.getInstance());
 	}
 
