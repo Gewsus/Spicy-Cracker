@@ -24,7 +24,6 @@ public class DoCheval extends CommandGroup {
     	public WaitAndLift() {
     		addSequential(new WaitCommand(0.4));
     		addSequential(new TimedAngler(0.5, 1));
-    		//addSequential(new TimedAngler(0.1, 1.2));
     	}
     }
 }

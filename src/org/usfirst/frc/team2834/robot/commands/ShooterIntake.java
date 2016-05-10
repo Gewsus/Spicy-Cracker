@@ -6,7 +6,7 @@ import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Rotates shooter wheels inward at a high speed to grab a ball.
  */
 public class ShooterIntake extends Command {
 

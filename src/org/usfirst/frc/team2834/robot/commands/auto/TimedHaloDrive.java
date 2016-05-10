@@ -5,13 +5,13 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Basic command to run the Drivetrain for a period of time in Halo Drive.
  */
 public class TimedHaloDrive extends Command {
 	
-	double power;
-	double rotate;
-	boolean holdRotation;
+	private double power;
+	private double rotate;
+	private boolean holdRotation;
 	
     public TimedHaloDrive(double power, double rotate, boolean holdRotation, double seconds) {
     	super("Timed Halo Drive: [" + power + "] [" + rotate + "] [" + holdRotation + "] [" + seconds + "]", seconds);

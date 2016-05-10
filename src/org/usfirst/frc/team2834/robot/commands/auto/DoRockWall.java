@@ -14,7 +14,6 @@ public class DoRockWall extends CommandGroup {
         addSequential(new SetDriveSixWheels(true));
         addParallel(new TimedAngler(0.1, 2.1));
         addSequential(new TimedHaloDrive(0.6, 0.0, false, 2.0));
-        addSequential(new TimedHaloDrive(0.75, 0.0, false, 0.75));
         addSequential(new TimedHaloDrive(-0.25, 0.0, false, 0.25));
         addSequential(new SetDriveSixWheels(false));
     }

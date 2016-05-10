@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Command to set weather or not the robot drives in reverse.
  */
 public class SetDriveReverse extends Command {
 	

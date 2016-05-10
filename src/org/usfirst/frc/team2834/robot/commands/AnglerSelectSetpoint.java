@@ -6,7 +6,7 @@ import org.usfirst.frc.team2834.robot.subsystems.Angler;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Selects a position for the angler based on the position of the joystick
  */
 public class AnglerSelectSetpoint extends Command {
 

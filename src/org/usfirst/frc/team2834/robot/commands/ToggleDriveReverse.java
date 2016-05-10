@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Switches between the two directions the robot may need to go.
  */
 public class ToggleDriveReverse extends Command {
 

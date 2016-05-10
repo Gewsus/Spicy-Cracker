@@ -6,21 +6,21 @@ import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Sets the position of the pusher to be either out or in.
  */
 public class PusherOut extends Command {
 
-	private double output;
+	private double position;
 	
     public PusherOut(boolean out) {
     	super("Pusher Out: [" + out + "]");
         requires(Robot.pusher);
-        output = out ? Pusher.OUT : Pusher.IN;
+        position = out ? Pusher.OUT : Pusher.IN;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.pusher.setPusherPosition(output);
+    	Robot.pusher.setPusherPosition(position);
     }
 
     // Called repeatedly when this Command is scheduled to run

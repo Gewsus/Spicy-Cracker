@@ -5,11 +5,11 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Basic command to run the Shooter for a period of time.
  */
 public class TimedShooter extends Command {
 	
-	double power;
+	private double power;
 
     public TimedShooter(double power, double seconds) {
         super("Timed Shooter: [" + power + "] [" + seconds + "]", seconds);
@@ -27,7 +27,6 @@ public class TimedShooter extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Robot.shooter.setShooterOutput(power, power);
-    	
     }
 
     // Make this return true when this Command no longer needs to run execute()

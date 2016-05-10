@@ -6,7 +6,8 @@ import org.usfirst.frc.team2834.robot.subsystems.Pusher;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- * This command is a dummy to cancel any commands running on Shooter or Shooter Angle
+ * This command is a dummy to cancel any commands running on Shooter or Angler
+ * 
  */
 public class FreeShooter extends Command {
 

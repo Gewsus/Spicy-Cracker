@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Sets the current position of the angler to be the zero position.
  */
 public class AnglerZero extends Command {
 

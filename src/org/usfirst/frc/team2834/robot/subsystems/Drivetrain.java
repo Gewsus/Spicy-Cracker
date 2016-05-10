@@ -21,9 +21,7 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	public double startingAngle = 0.0; //The robot may start pointing in different directions
 	private double autoRotate = 0.0;
 	private final double CENTER_SCALE = 0.4; //Apply an exponential scale function to the input
-	private final double TOLERANCE = 1.5; //Value on either side of setpoint to register on target
-	//private final double FEED_FORWARD = 0.7; //Value required for the drivetrain to actually move.  Thanks build team.
-
+	private final double TOLERANCE = 2.0; //Value on either side of setpoint to register on target
 	/*
      * Order goes:
      * 0	3
@@ -179,14 +177,6 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 		if (onTarget()) {
 			autoRotate = 0.0;
 		} else {
-			//The robot this year does not rotate unless a considerable amount of power is applied
-			//This code adds a constant feed forward to the PID output to ensure the robot does this.
-			/*if (output < 0.0) {
-				output -= FEED_FORWARD;
-			} else if (output > 0.0) {
-				output += FEED_FORWARD;
-			}
-			autoRotate = output;*/
 			autoRotate = scale(output, 0.05);
 		}
 	}
@@ -198,8 +188,6 @@ public class Drivetrain extends PIDSubsystem implements RobotMap, DashboardSende
 	
 	@Override
 	public void dashboardInit() {
-		//SmartDashboard.putData("Gyro", gyro);
-		//SmartDashboard.putData("Gyro PID", getPIDController());
 	}
 	
 	@Override

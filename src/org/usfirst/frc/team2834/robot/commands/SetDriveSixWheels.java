@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Command to utilize the offset wheels in the drivetrain.
  */
 public class SetDriveSixWheels extends Command {
 	

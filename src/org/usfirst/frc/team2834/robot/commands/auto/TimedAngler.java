@@ -5,23 +5,20 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Basic command to run the Angler for a period of time.
  */
 public class TimedAngler extends Command {
 	
-	double power;
-	double seconds;
+	private double power;
 
     public TimedAngler(double power, double seconds) {
-        super("Timed Angler: [" + power + "] [" + seconds + "]");
+        super("Timed Angler: [" + power + "] [" + seconds + "]", seconds);
         requires(Robot.angler);
         this.power = power;
-        this.seconds = seconds;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	setTimeout(seconds);
     }
 
     // Called repeatedly when this Command is scheduled to run

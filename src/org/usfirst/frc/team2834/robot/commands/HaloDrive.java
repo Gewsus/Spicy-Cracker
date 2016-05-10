@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Basic driving method for two joysticks
  */
 public class HaloDrive extends Command {
 	

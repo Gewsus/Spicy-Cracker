@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Swaps between the two camera views.
  */
 public class SwapCameraView extends Command {
 	

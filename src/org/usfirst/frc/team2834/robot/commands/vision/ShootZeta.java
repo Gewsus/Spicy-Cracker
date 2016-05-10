@@ -6,14 +6,13 @@ import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Sets shooter speed based on vertical position on screen
  */
 public class ShootZeta extends Command {
 
     public ShootZeta() {
         super("Shoot Zeta");
         requires(Robot.shooter);
-        //requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
@@ -24,7 +23,6 @@ public class ShootZeta extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	//new PusherOut(false).start();
     	double s = Shooter.DEFAULT_SETPOINT + (Robot.vision.getZeta() * 6300);
     	Robot.shooter.setShooterSetpoints(s, s);
     }

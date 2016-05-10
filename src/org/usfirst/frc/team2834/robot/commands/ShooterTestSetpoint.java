@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- *
+ * Tests the automatic shooter speeds with the SmartDashboard.
+ * 
+ * Useful for debigging only.
  */
 public class ShooterTestSetpoint extends Command {
     

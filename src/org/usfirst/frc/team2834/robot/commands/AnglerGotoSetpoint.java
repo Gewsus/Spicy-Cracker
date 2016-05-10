@@ -5,11 +5,11 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Command used to automatically position the angler to a specific encoder reading
  */
 public class AnglerGotoSetpoint extends Command {
 	
-	double setpoint;
+	private double setpoint;
 
     public AnglerGotoSetpoint(double setpoint) {
         super("Angler goto Setpoint: [" + setpoint + "]");

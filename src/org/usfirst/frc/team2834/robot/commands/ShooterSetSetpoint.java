@@ -6,7 +6,7 @@ import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Sets the speed of the shooter wheels to specific encoder values.
  */
 public class ShooterSetSetpoint extends Command {
 	

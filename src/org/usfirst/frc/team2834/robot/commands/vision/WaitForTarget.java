@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Waits for the target to be on screen and a reasonable distance away.
  */
 public class WaitForTarget extends Command {
 
@@ -17,6 +17,7 @@ public class WaitForTarget extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Timer.delay(1);
     	//Robot.vision.calculate();
     	setTimeout(15);
     }
@@ -28,7 +29,7 @@ public class WaitForTarget extends Command {
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
         return isTimedOut()
-        		|| Robot.vision.isGoal()
+        		|| (Robot.vision.isGoal() && Robot.vision.getDistance() < 200)
         		;
     }
 

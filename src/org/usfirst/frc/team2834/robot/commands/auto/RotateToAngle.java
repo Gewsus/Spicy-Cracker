@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Rotates to a certain degree based on the robots zero position
  */
 public class RotateToAngle extends Command {
 	

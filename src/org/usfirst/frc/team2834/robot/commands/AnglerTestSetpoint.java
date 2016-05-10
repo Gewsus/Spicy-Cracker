@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- *
+ * Tests the operation of the automatic angler position.
+ * 
+ * Only used for debugging.
  */
 public class AnglerTestSetpoint extends Command {
 

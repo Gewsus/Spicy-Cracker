@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 
 /**
- *
+ * Command sequence to push the ball out and then retract.
  */
 public class PushToShoot extends CommandGroup {
     

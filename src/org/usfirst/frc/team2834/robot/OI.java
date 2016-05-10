@@ -1,13 +1,7 @@
 package org.usfirst.frc.team2834.robot;
 
 import org.usfirst.frc.team2834.robot.commands.*;
-import org.usfirst.frc.team2834.robot.commands.auto.DriveDistance;
-import org.usfirst.frc.team2834.robot.commands.vision.AutoCenterGoal;
-import org.usfirst.frc.team2834.robot.commands.vision.AutoDriveToTarget;
-import org.usfirst.frc.team2834.robot.commands.vision.ShootDistance;
-import org.usfirst.frc.team2834.robot.commands.vision.ShootZeta;
-import org.usfirst.frc.team2834.robot.commands.vision.TestAutoLineUp;
-import org.usfirst.frc.team2834.robot.commands.vision.SwapCameraView;
+import org.usfirst.frc.team2834.robot.commands.vision.*;
 import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 
 import com.DashboardSender;
@@ -100,16 +94,9 @@ public class OI implements RobotMap, DashboardSender {
 		SmartDashboard.putData(new ShootZeta());
 		SmartDashboard.putData(new ShootDistance());
 		SmartDashboard.putData(new PushToShoot());
-		//SmartDashboard.putData(new RotateToAngle(90, 0));
-		//SmartDashboard.putData(new DoLowBar());
-		//SmartDashboard.putData(new DriveToOW());
-		//SmartDashboard.putData(new AutoCenterGoal());
-		//SmartDashboard.putData(new DoCheval());
 		SmartDashboard.putData(new ShooterTestSetpoint());
-		//SmartDashboard.putData(new ShooterSetpointByDistance());
 		SmartDashboard.putData(new AnglerTestSetpoint());
-		SmartDashboard.putData(new AutoDriveToTarget());
-		SmartDashboard.putData(new TestAutoLineUp());
+		SmartDashboard.putData(new DriveZeta());
 		SmartDashboard.putData(new DriveDistance());
 		SmartDashboard.putData(Scheduler.getInstance());
 	}

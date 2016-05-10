@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Uses joystick to control the shooter wheels.
  */
 public class ShooterOverride extends Command {
 

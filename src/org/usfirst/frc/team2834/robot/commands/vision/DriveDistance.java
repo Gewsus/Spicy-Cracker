@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2834.robot.commands.auto;
+package org.usfirst.frc.team2834.robot.commands.vision;
 
 import org.usfirst.frc.team2834.robot.Robot;
 
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveDistance extends Command {
 
-private double power = 0.0;
+	private double power = 0.0;
 	
     public DriveDistance() {
     	super("Drive Distance");

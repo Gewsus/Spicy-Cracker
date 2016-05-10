@@ -6,14 +6,13 @@ import org.usfirst.frc.team2834.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Setes shooter speed based on distance
  */
 public class ShootDistance extends Command {
 
     public ShootDistance() {
         super("Shoot Distance");
         requires(Robot.shooter);
-        //requires(Robot.vision);
     }
 
     // Called just before this Command runs the first time
@@ -24,7 +23,6 @@ public class ShootDistance extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	//new PusherOut(false).start();
     	double s = Shooter.DEFAULT_SETPOINT + (Shooter.SLOPE * (Robot.vision.getDistance() - 116.0))/* +  1.5 * 0.5 * Math.pow((Robot.vision.getDistance() - 116.0), 2)*/;
     	Robot.shooter.setShooterSetpoints(s, s);
     }

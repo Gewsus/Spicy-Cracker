@@ -5,7 +5,7 @@ import org.usfirst.frc.team2834.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- *
+ * Rotates a certain degree relative to the current robot position
  */
 public class RotateAngle extends Command {
 	
